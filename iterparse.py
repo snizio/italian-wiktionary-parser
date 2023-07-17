@@ -8,10 +8,11 @@ import sys
 
 
 def prepend_ns(s):
-    return '{http://www.mediawiki.org/xml/export-0.10/}' + s # automate the ns find
+    """This prepend the namespace to each tag"""
+    return NAMESPACE + s 
 
 def lang_check(line, lemma):
-    line = line.replace(" ", "") # eliminiamo gli spazi per conformità
+    line = line.replace(" ", "") # eliminiamo gli spazi per rendere tutte le entries conformi
     match =  re.search(lang_pattern, line) # lingua
     if match != None:
         lang = match.group(1)
@@ -220,7 +221,7 @@ def main(xml_dump_path):
                                     continue # linea[1:] è vuota
                                 glossa_check(line, lemma, current_pos)
                             else:
-                                elenco_flag = False # se dopo un elenco puntato ho una lista di esempi?
+                                elenco_flag = False
                                                 
                     except Exception as e:
                         print("ERRORE al lemma", lemma)
@@ -235,6 +236,15 @@ if __name__ == "__main__":
     lang_dict = {k:v for k, v in zip(df["Language Code"], df["Language Name (Italian)"])}
 
     parsed_dict = {} # dictionary
+
+    context = iterparse(sys.argv[1], events=("start", "end"))
+
+    # Get the root element
+    _, root = next(context)
+
+    # Extract the namespace from the root element
+    NAMESPACE = root.tag.split("}")[0] + "}"
+    del context
 
     lang_pattern = re.compile("=={{-?(.+?)-?}}==")
     pos_pattern = re.compile("{{-(.*?)-\|(?:\|?\w*)*}}")
