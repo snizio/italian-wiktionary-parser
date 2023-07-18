@@ -11,8 +11,14 @@ def prepend_ns(s):
     """This prepend the namespace to each tag"""
     return NAMESPACE + s 
 
+def remove_list_tokens(line):
+    if line[0] in ["*", "#", ":"]:
+        return remove_list_tokens(line[1:])
+    else:
+        return line
+
 def lang_check(line, lemma):
-    line = line.replace(" ", "") # eliminiamo gli spazi per rendere tutte le entries conformi
+    line = line.replace(" ", "") # eliminiamo gli spazi per conformità
     match =  re.search(lang_pattern, line) # lingua
     if match != None:
         lang = match.group(1)
@@ -20,11 +26,11 @@ def lang_check(line, lemma):
             lang = match.group(2)
         if lang == "it":
             parsed_dict[lemma] = {"meta": {"ipa": [], "sill": [], "etim": ""}, "meanings": {}}
-            return True
+            return lang, True
         else:
-            return False
+            return lang, False
     else:
-        return False
+        return 0, False
     
 def pron_check(line):
     match = re.search(pron_pattern, line)
@@ -90,8 +96,18 @@ def etim_check(line):
     if match != None:
         return True
 
+def noetim_check(line):
+    match = re.search(noetim_pattern, line)
+    if match != None:
+        return True
+
 def get_etim(line, lemma):
-    cleaned_line = re.sub("{{Pn}}", lemma, line)
+    line = remove_list_tokens(line)
+    cleaned_line = re.sub("{{Pn}}|{{pn}}", lemma, line)
+    cleaned_line = re.sub(ref_pattern, "", cleaned_line)
+    cleaned_line = re.sub(file_pattern, "", cleaned_line)
+    cleaned_line = re.sub(vedi_pattern, lambda m: "vedi " + m.group(1).split("|")[1] if "|" in m.group(1) else "vedi " + m.group(1) , cleaned_line) # {{Vd|Afghanistan#Italiano|Afghanistan}} ---> vedi Afghanistan
+    cleaned_line = re.sub(etimlink_pattern, lambda m: f"vedi {m.group(1)}", cleaned_line)
     cleaned_line = re.sub(lang_pointer_pattern, lambda m: lang_dict.get(m.group(1), m.group(0)), cleaned_line)
     cleaned_line = re.sub(special_redirect_pattern, r"\1", cleaned_line)
     cleaned_line = re.sub("{{.*?}}", "", cleaned_line)
@@ -105,8 +121,11 @@ def get_etim(line, lemma):
         parsed_dict[lemma]["meta"]["etim"] += "\n"+cleaned_line
     
 def glossa_check(line, lemma, pos):
-    line = line[1:]
-    cleaned_line = re.sub("{{Pn}}", lemma, line)
+    line = remove_list_tokens(line)
+    cleaned_line = re.sub("{{Pn}}|{{pn}}", lemma, line)
+    cleaned_line = re.sub(ref_pattern, "", cleaned_line)
+    cleaned_line = re.sub(file_pattern, "", cleaned_line)
+    cleaned_line = re.sub(vedi_pattern, lambda m: "vedi " + m.group(1).split("|")[1] if "|" in m.group(1) else "vedi " + m.group(1) , cleaned_line) # {{Vd|Afghanistan#Italiano|Afghanistan}} ---> vedi Afghanistan
     cleaned_line = re.sub(lang_pointer_pattern, lambda m: lang_dict.get(m.group(1), m.group(0)), cleaned_line)
     cleaned_line = re.sub(special_redirect_pattern, r"\1", cleaned_line)
     cleaned_line = re.sub("{{.*?}}", "", cleaned_line)
@@ -149,9 +168,9 @@ def main(xml_dump_path):
                             line = lines[i]
 
                             if line == "":
-                                etim_flag = False
-                                pron_flag = False
-                                sill_flag = False
+                                # etim_flag = False
+                                # pron_flag = False
+                                # sill_flag = False
                                 continue
 
                             if pron_flag:
@@ -168,8 +187,11 @@ def main(xml_dump_path):
                                     sill_flag = False
                             
                             if etim_flag:
+                                if noetim_check(line):
+                                    etim_flag = False
+                                    continue
                                 if line[0] == "#" or line[0] == "*" or line[0] == ":":
-                                    get_etim(line[1:], lemma)
+                                    get_etim(line, lemma)
                                     continue
                                 else:
                                     get_etim(line, lemma)
@@ -182,7 +204,14 @@ def main(xml_dump_path):
                                 continue
 
                             if line[0] == "=":
-                                lang_found = lang_check(line, lemma)
+                                lang, lang_found = lang_check(line, lemma)
+                                if lang == 0: # se la line inizia con "=" ma non ha informazioni sulla lingua 
+                                    continue
+                                if lang != "it":
+                                    break
+                                if lang_found:
+                                    continue
+                            
                             if not lang_found:
                                 continue
                             
@@ -195,6 +224,7 @@ def main(xml_dump_path):
                                 etim_flag = False
                                 i_pos +=1
                                 current_pos = pos
+                                continue
 
                             pron_flag = pron_check(line)
                             if pron_flag:
@@ -247,23 +277,29 @@ if __name__ == "__main__":
     del context
 
     lang_pattern = re.compile("=={{-?(.+?)-?}}==")
+    vedi_pattern = re.compile("{{[Vv]d\|(.*?)}}")
     pos_pattern = re.compile("{{-(.*?)-\|(?:\|?\w*)*}}")
-    morpho_pattern = re.compile("{{Pn.*?}}(?:\s{1,3})?''(.*?)''") # a volte ci sono più (o non ci sono) spazi prima della morpho
-    glossa_pattern = re.compile("\[\[(\w*?(?:\s\w*?)?)\]\]|\[\[\w*?(?:#\w*)?\|(.*?)\]\]")
-    special_redirect_pattern = re.compile("\[\[:?\w+:\w*\s?\w*\|(\w*\s?\w*)\]\]") # [[:w:.... ... | .... ....]] 
+    morpho_pattern = re.compile("(?:{{Pn.*?}}|{{pn.*?}})(?:\s{1,3})?''(.*?)''") # a volte ci sono più (o non ci sono) spazi prima della morpho
+    glossa_pattern = re.compile("\[\[(-?\w*?-?(?:\s\w*?)?)\]\]|\[\[\w*?(?:#\w*)?\|(.*?)\]\]")
+    special_redirect_pattern = re.compile("\[\[:?\w+:.*?\|(.*?)\]\]") # [[:w:.... ... | .... ....]] [[:s:.... ... | .... ....]] 
     quote_marks_pattern = re.compile("'{2,3}") # rimuove le virgolette se doppie o triple, notazione di wikipedia per il reindirizzamento
     ipa_pattern = re.compile("{{IPA\|\/(.*?)\/}}")
     sill_pattern = re.compile("{{-sill-}}")
     etim_pattern = re.compile("{{-etim-}}")
+    noetim_pattern = re.compile("{{Noetim\|it}}")
+    etimlink_pattern = re.compile("{{Etim-link\|(.*?)}}")
     pron_pattern = re.compile("{{-pron-}}")
-    frequent_pos = ['verb form', 'sost', 'sost form', 'agg form', 'agg', 'verb', 'nome', 'avv', 'loc nom', 'acron', 'agg num', 'espr', 'pref', 'card', 'suff', 'inter', 'cong', 'prep', 'pronome']
+    file_pattern = re.compile("\[\[File:.*?\]\]")
+    ref_pattern = re.compile("<ref.*?>.*?<\/ref>|<ref.*?\/>")
     lang_pointer_pattern = re.compile("{{(\w+)}}")
 
     main(sys.argv[1])
 
-    print("The xml dump was completely parsed!\nSaving the file (this can take some seconds depending on the size of the dictionary)...")
+    print(f"The xml dump was completely parsed! {len(parsed_dict)} lemmas were extracted.\nSaving the file (this can take some seconds depending on the size of the dictionary)...")
 
     with open(sys.argv[2], "w") as f:
         json.dump(parsed_dict, f)
+
+    print(f"File saved at {sys.argv[2]}.")
 
 # from command line: python iterparse.py xml_dump_path out_path
