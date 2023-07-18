@@ -1,3 +1,3 @@
-/.vscode
-iterparse.ipynb
+/.vscode*
+.ipynb
 itwiktionary-20230620-pages-articles.xml
