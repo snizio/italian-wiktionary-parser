@@ -1,5 +1,5 @@
 # italian-wiktionary-parser
-This repository contains a python script for parsing an xml dump of the Italian Wiktionary (Wikizionario). It also contains the parsed dictionary in a json file with 369k lemmas circa. As far as I'm concerned, this is the first repo ever offering an italian dictionary as a free resource. This was made available to enhance NLP tasks that needs similar type of corpora. The dictionary is in a json file and each lemma is structured as follows (i.e lemma "neologismo"):
+This repository contains a python script for parsing the xml dump of the Italian Wiktionary (Wikizionario). It also contains the parsed dictionary in a json file with 369k lemmas circa. As far as I'm concerned, this is the first repo ever offering an italian dictionary as a free resource. This was made available to enhance NLP tasks that needs similar type of corpora. The dictionary is in a json file and each lemma is structured as follows (i.e lemma "neologismo"):
 
 {'meta': {'ipa': ['neoloˈd͡ʒizmo'],
   'sill': ['ne', 'o', 'lo', 'gì', 'smo'],
