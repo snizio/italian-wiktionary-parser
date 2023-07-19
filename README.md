@@ -1,7 +1,11 @@
 # italian-wiktionary-parser
-This repository contains a python script for parsing an xml dump of the Italian Wiktionary (Wikizionario). It also contains the parsed dictionary in a json file with 369k lemmas circa. As far as I'm concerned, this is the first repo ever offering an italian dictionary as a free resource. This was made available to enhance NLP tasks that needs similar type of corpora. The dictionary is in a json file and each lemma is structured as follows (i.e lemma "sigaretta"):
+This repository contains a python script for parsing an xml dump of the Italian Wiktionary (Wikizionario). It also contains the parsed dictionary in a json file with 369k lemmas circa. As far as I'm concerned, this is the first repo ever offering an italian dictionary as a free resource. This was made available to enhance NLP tasks that needs similar type of corpora. The dictionary is in a json file and each lemma is structured as follows (i.e lemma "neologismo"):
 
-{'meta': {'ipa': ['siɡaˈretta'], 'sill': ['si', 'ga', 'rét', 'ta'], 'etim': 'diminutivo di sigaro, similmente al francese cigarette'}, 'meanings': {'sost_0': {'morpho': 'f sing', 'glossa': 'rotolino di forma cilindrica contenente tabacco trinciato avvolto in una cartina destinato ad essere fumato\nqualsiasi oggetto avente forma simile a quella di una sigaretta\npiccola bobina di cartoncino attorno a cui è avvolto filo per cucire'}}}
+{'meta': {'ipa': ['neoloˈd͡ʒizmo'],
+  'sill': ['ne', 'o', 'lo', 'gì', 'smo'],
+  'etim': 'composto dal prefisso neo-  (che proviene dal Greco Moderno νεο- ossia "nuovo"), dal Greco Moderno λόγος cioè "parola", e dal suffisso "-ismo" per indicare l\'origine, ricalcando il Francese néologisme'},
+ 'meanings': {'sost_0': {'morpho': 'm sing',
+   'glossa': 'termine, concetto o costrutto introdotto di recente nella lingua'}}}
 
 There are inconsistencies due to shallow tagging by the wiktionary users and the weird complexity of the tag system. The dumps are taken from https://dumps.wikimedia.org/itwiktionary/20230701/.
 
