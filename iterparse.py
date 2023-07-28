@@ -280,7 +280,7 @@ if __name__ == "__main__":
     vedi_pattern = re.compile("{{[Vv]d\|(.*?)}}")
     pos_pattern = re.compile("{{-(.*?)-\|(?:\|?\w*)*}}")
     morpho_pattern = re.compile("(?:{{Pn.*?}}|{{pn.*?}})(?:\s{1,3})?''(.*?)''") # a volte ci sono più (o non ci sono) spazi prima della morpho
-    glossa_pattern = re.compile("\[\[(-?\w*?-?(?:\s\w*?)?)\]\]|\[\[\w*?(?:#\w*)?\|(.*?)\]\]")
+    glossa_pattern = re.compile("\[\[(-?\w*?-?(?:\s\w*?)*)\]\]|\[\[\w*?(?:#\w*)?\|(.*?)\]\]")
     special_redirect_pattern = re.compile("\[\[:?\w+:.*?\|(.*?)\]\]") # [[:w:.... ... | .... ....]] [[:s:.... ... | .... ....]] 
     quote_marks_pattern = re.compile("'{2,3}") # rimuove le virgolette se doppie o triple, notazione di wikipedia per il reindirizzamento
     ipa_pattern = re.compile("{{IPA\|\/(.*?)\/}}")
