@@ -120,7 +120,7 @@ def get_etim(line, lemma):
     cleaned_line = re.sub(etimlink_pattern, lambda m: f"vedi {m.group(1)}", cleaned_line)
     cleaned_line = re.sub(lang_pointer_pattern, lambda m: lang_dict.get(m.group(1), m.group(0)), cleaned_line)
     # cleaned_line = re.sub(special_redirect_pattern, r"\1", cleaned_line)
-    cleaned_line = re.sub(tag_term_pattern, r"#\1#", cleaned_line)
+    cleaned_line = re.sub(tag_term_pattern, r"##\1##", cleaned_line)
     cleaned_line = re.sub("{{.*?}}", "", cleaned_line)
     cleaned_line = re.sub(glossa_pattern, lambda m: m.group(1) if m.group(2) is None else m.group(2), cleaned_line) # rimuove [[...]] o [[...|...]] tenendo la prima parola
     cleaned_line = re.sub("\[\[\w.*?\]\]", "", cleaned_line)
@@ -140,7 +140,7 @@ def glossa_check(line, lemma, pos):
     cleaned_line = re.sub(vedi_pattern, lambda m: "vedi " + m.group(1).split("|")[1] if "|" in m.group(1) else "vedi " + m.group(1) , cleaned_line) # {{Vd|Afghanistan#Italiano|Afghanistan}} ---> vedi Afghanistan
     cleaned_line = re.sub(lang_pointer_pattern, lambda m: lang_dict.get(m.group(1), m.group(0)), cleaned_line)
     # cleaned_line = re.sub(special_redirect_pattern, r"\1", cleaned_line)
-    cleaned_line = re.sub(tag_term_pattern, r"#\1#", cleaned_line)
+    cleaned_line = re.sub(tag_term_pattern, r"##\1##", cleaned_line)
     cleaned_line = re.sub("{{.*?}}", "", cleaned_line)
     cleaned_line = re.sub(glossa_pattern, lambda m: m.group(1) if m.group(2) is None else m.group(2), cleaned_line) # rimuove [[...]] o [[...|...]] tenendo la prima parola
     cleaned_line = re.sub("\[\[\w.*?\]\]", "", cleaned_line)
