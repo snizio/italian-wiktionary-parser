@@ -215,6 +215,7 @@ def main(xml_dump_path):
                                 continue
 
                             if line[0] == "=":
+                                elenco_flag = False
                                 lang, lang_found = lang_check(line, lemma)
                                 if lang == 0: # if the line starts with "=" but do not contains lang information (rare)
                                     continue
@@ -235,6 +236,7 @@ def main(xml_dump_path):
                             
                             pos = check_pos(lemma, line, i_pos, current_pos)
                             if current_pos != pos:
+                                elenco_flag = False
                                 etim_flag = False
                                 i_pos +=1
                                 current_pos = pos
@@ -242,17 +244,21 @@ def main(xml_dump_path):
 
                             pron_flag = pron_check(line)
                             if pron_flag:
+                                elenco_flag = False
                                 continue
                             
                             sill_flag = sill_check(line)
                             if sill_flag:
+                                elenco_flag = False
                                 continue
                             
                             if morpho_check(line, lemma, current_pos):
+                                elenco_flag = False
                                 continue
 
                             etim_flag = etim_check(line)
                             if etim_flag:
+                                elenco_flag = False
                                 continue
 
                             if line[0] == "#": # glossa
@@ -261,7 +267,7 @@ def main(xml_dump_path):
                                 if line[-1] == ":": # it introduces a list (usually...)
                                     elenco_flag = True
                                 try:
-                                    if line[1] == "*" and not elenco_flag: # examples
+                                    if line[1] in ["*", ":"] and not elenco_flag: # examples
                                         continue
                                 except IndexError:
                                     continue # if line[1:] is empty
