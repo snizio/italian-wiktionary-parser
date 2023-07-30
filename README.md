@@ -5,7 +5,7 @@ This repository contains a python script for parsing the xml dump of the Italian
   'sill': ['ne', 'o', 'lo', 'gì', 'smo'],
   'etim': 'composto dal prefisso neo-  (che proviene dal Greco Moderno νεο- ossia "nuovo"), dal Greco Moderno λόγος cioè "parola", e dal suffisso "-ismo" per indicare l\'origine, ricalcando il Francese néologisme'},
  'meanings': {'sost_0': {'morpho': 'm sing',
-   'glossa': 'termine, concetto o costrutto introdotto di recente nella lingua'}}}
+   'glossa': '#linguistica# termine, concetto o costrutto introdotto di recente nella lingua'}}}
 
 There are inconsistencies due to shallow tagging by the wiktionary users and the weird complexity of the tag system. The dumps are taken from https://dumps.wikimedia.org/itwiktionary/20230701/.
 
