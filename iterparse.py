@@ -122,7 +122,8 @@ def get_etim(line, lemma):
     # cleaned_line = re.sub(special_redirect_pattern, r"\1", cleaned_line)
     cleaned_line = re.sub(tag_term_pattern, r"##\1##", cleaned_line)
     cleaned_line = re.sub("{{.*?}}", "", cleaned_line)
-    cleaned_line = re.sub(glossa_pattern, lambda m: m.group(1) if m.group(2) is None else m.group(2), cleaned_line) # rimuove [[...]] o [[...|...]] tenendo la prima parola
+    cleaned_line = re.sub(special_redirect_pattern, r"\1", cleaned_line)
+    cleaned_line = re.sub(redirect_pattern, r"\1", cleaned_line)
     cleaned_line = re.sub("\[\[\w.*?\]\]", "", cleaned_line)
     cleaned_line = re.sub(quote_marks_pattern, "", cleaned_line)
     cleaned_line = cleaned_line.lstrip()
@@ -142,7 +143,8 @@ def glossa_check(line, lemma, pos):
     # cleaned_line = re.sub(special_redirect_pattern, r"\1", cleaned_line)
     cleaned_line = re.sub(tag_term_pattern, r"##\1##", cleaned_line)
     cleaned_line = re.sub("{{.*?}}", "", cleaned_line)
-    cleaned_line = re.sub(glossa_pattern, lambda m: m.group(1) if m.group(2) is None else m.group(2), cleaned_line) # rimuove [[...]] o [[...|...]] tenendo la prima parola
+    cleaned_line = re.sub(special_redirect_pattern, r"\1", cleaned_line)
+    cleaned_line = re.sub(redirect_pattern, r"\1", cleaned_line)
     cleaned_line = re.sub("\[\[\w.*?\]\]", "", cleaned_line)
     cleaned_line = re.sub(quote_marks_pattern, "", cleaned_line)
     cleaned_line = cleaned_line.lstrip()
@@ -304,8 +306,8 @@ if __name__ == "__main__":
     pos_pattern = re.compile("{{-(.*?)-\|(?:\|?\w*)*}}")
     morpho_pattern = re.compile("(?:{{Pn.*?}}|{{pn.*?}})(?:\s{1,3})?''(.*?)''") 
     # glossa_pattern = re.compile("\[\[(-?\w*?-?(?:\s?\w*?)*)\]\]|\[\[\w*?(?:#\w*)?\|(.*?)\]\]")
-    glossa_pattern = re.compile("\[\[.*?\|(.*?)\]\]|\[\[(.*?)\]\]")
-    # special_redirect_pattern = re.compile("\[\[:?\w+:.*?\|(.*?)\]\]") # [[:w:.... ... | .... ....]] [[:s:.... ... | .... ....]] 
+    special_redirect_pattern = re.compile("\[\[[^\[\]]+?\|(.+?)\]\]") # [[:w:.... ... | .... ....]] [[:s:.... ... | .... ....]] 
+    redirect_pattern = re.compile("\[\[(.*?)\]\]")  
     quote_marks_pattern = re.compile("'{2,3}")
     ipa_pattern = re.compile("{{IPA\|\/(.*?)\/}}")
     sill_pattern = re.compile("{{-sill-}}")
