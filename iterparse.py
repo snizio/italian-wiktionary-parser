@@ -126,6 +126,7 @@ def get_etim(line, lemma):
     cleaned_line = re.sub(redirect_pattern, r"\1", cleaned_line)
     cleaned_line = re.sub("\[\[\w.*?\]\]", "", cleaned_line)
     cleaned_line = re.sub(quote_marks_pattern, "", cleaned_line)
+    cleaned_line = re.sub(general_tag_pattern, r"\1", cleaned_line)
     cleaned_line = cleaned_line.lstrip()
     if parsed_dict[lemma]["meta"]["etim"] == "":
         parsed_dict[lemma]["meta"]["etim"] += cleaned_line
@@ -147,6 +148,7 @@ def glossa_check(line, lemma, pos):
     cleaned_line = re.sub(redirect_pattern, r"\1", cleaned_line)
     cleaned_line = re.sub("\[\[\w.*?\]\]", "", cleaned_line)
     cleaned_line = re.sub(quote_marks_pattern, "", cleaned_line)
+    cleaned_line = re.sub(general_tag_pattern, r"\1", cleaned_line)
     cleaned_line = cleaned_line.lstrip()
     if parsed_dict[lemma]["meanings"][pos]["glossa"] == "":
         parsed_dict[lemma]["meanings"][pos]["glossa"] += cleaned_line
@@ -318,6 +320,7 @@ if __name__ == "__main__":
     pron_pattern = re.compile("{{-pron-}}")
     file_pattern = re.compile("\[\[File:.*?\]\]")
     ref_pattern = re.compile("<ref.*?>.*?<\/ref>|<ref.*?\/>")
+    general_tag_pattern = re.compile("<.+?>(.+?)<\/.+?>") 
     lang_pointer_pattern = re.compile("{{(\w+)}}")
     tag_term_pattern = re.compile("\{\{[Tt]erm\|(.*?)\|it\}\}")
 
