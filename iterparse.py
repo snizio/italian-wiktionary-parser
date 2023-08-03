@@ -74,7 +74,13 @@ def check_pos(lemma, line, i_pos, current_pos):
     """Checks for the PoS pattern and retrieves the available PoS"""
     match = re.search(pos_pattern, line) # pos
     if match != None:
-        pos = match.group(1) + f"_{i_pos}"
+        pos = match.group(1)
+        if pos in ["sill", "noconf", "pron", "trad", "alter", "ant", "etim"]:
+            return current_pos
+        if pos in pos_converter_dict:
+            pos = pos_converter_dict[pos]
+        pos = re.sub(white_spaces_pattern, " ", pos)
+        pos = pos.strip() + f"_{i_pos}"
         if pos != current_pos and pos != f"Varie lingue_{i_pos}":
             current_pos = pos
             parsed_dict[lemma]["meanings"][pos] = {"morpho":"", "glossa":""}
@@ -88,7 +94,7 @@ def morpho_check(line, lemma, pos):
     """Checks and extracts morphological metadata (i.e. "f sing" from a typical morpho line: {{Pn|w}} ''f sing'' )"""
     match = re.search(morpho_pattern, line) # informazioni morfologiche
     if match != None:
-        morpho = match.group(1).lstrip() # talvolta c'è uno spazio all'inizio
+        morpho = match.group(1).strip() # talvolta c'è uno spazio all'inizio
         parsed_dict[lemma]["meanings"][pos]["morpho"] = morpho
         return True
 
@@ -127,7 +133,8 @@ def get_etim(line, lemma):
     cleaned_line = re.sub("\[\[\w.*?\]\]", "", cleaned_line)
     cleaned_line = re.sub(quote_marks_pattern, "", cleaned_line)
     cleaned_line = re.sub(general_tag_pattern, r"\1", cleaned_line)
-    cleaned_line = cleaned_line.lstrip()
+    cleaned_line = re.sub(white_spaces_pattern, " ", cleaned_line)
+    cleaned_line = cleaned_line.strip()
     if parsed_dict[lemma]["meta"]["etim"] == "":
         parsed_dict[lemma]["meta"]["etim"] += cleaned_line
     else:
@@ -149,7 +156,8 @@ def glossa_check(line, lemma, pos):
     cleaned_line = re.sub("\[\[\w.*?\]\]", "", cleaned_line)
     cleaned_line = re.sub(quote_marks_pattern, "", cleaned_line)
     cleaned_line = re.sub(general_tag_pattern, r"\1", cleaned_line)
-    cleaned_line = cleaned_line.lstrip()
+    cleaned_line = re.sub(white_spaces_pattern, " ", cleaned_line)
+    cleaned_line = cleaned_line.strip()
     if parsed_dict[lemma]["meanings"][pos]["glossa"] == "":
         parsed_dict[lemma]["meanings"][pos]["glossa"] += cleaned_line
     else:
@@ -239,6 +247,15 @@ def main(xml_dump_path):
                                 unk_pos_flag = True
                             
                             pos = check_pos(lemma, line, i_pos, current_pos)
+                            if pos == "sill": # there are 4 cases where the sill tag is written like a PoS, this if statement handles this. (Due to bad annotation)
+                                sill_flag = True
+                                continue
+                            elif pos == "pron": # only one case (also bad annotation)
+                                pron_flag = True
+                                continue
+                            elif pos == "etim":
+                                etim_flag = True
+                                continue
                             if current_pos != pos:
                                 elenco_flag = False
                                 etim_flag = False
@@ -291,6 +308,15 @@ if __name__ == "__main__":
     df = pd.read_csv("lang_list.tsv", sep="\t")
     lang_dict = {k:v for k, v in zip(df["Language Code"], df["Language Name (Italian)"])}
 
+    # use the following dictionary as a PoS converter. The following key value pairs handles some tag errors made by users 
+    pos_converter_dict = {"suffissoide": "suff",
+                          "voce verb": "verb",
+                          "nome form": "nome",
+                          "verbm form": "verb form",
+                          "agg num form": "agg num",
+                          "adj": "agg",
+                          "prefissoide": "pref"}
+
     parsed_dict = {} # dictionary
 
     context = iterparse(sys.argv[1], events=("start", "end"))
@@ -305,7 +331,7 @@ if __name__ == "__main__":
     # compiling regex
     lang_pattern = re.compile("=={{-?(.+?)-?}}==")
     vedi_pattern = re.compile("{{[Vv]d\|(.*?)}}")
-    pos_pattern = re.compile("{{-(.*?)-\|(?:\|?\w*)*}}")
+    pos_pattern = re.compile("{{-(.*?)-\|(?:\|?.*?)*}}")
     morpho_pattern = re.compile("(?:{{Pn.*?}}|{{pn.*?}})(?:\s{1,3})?''(.*?)''") 
     # glossa_pattern = re.compile("\[\[(-?\w*?-?(?:\s?\w*?)*)\]\]|\[\[\w*?(?:#\w*)?\|(.*?)\]\]")
     special_redirect_pattern = re.compile("\[\[[^\[\]]+?\|(.+?)\]\]") # [[:w:.... ... | .... ....]] [[:s:.... ... | .... ....]] 
@@ -323,6 +349,7 @@ if __name__ == "__main__":
     general_tag_pattern = re.compile("<.+?>(.+?)<\/.+?>") 
     lang_pointer_pattern = re.compile("{{(\w+)}}")
     tag_term_pattern = re.compile("\{\{[Tt]erm\|(.*?)\|it\}\}")
+    white_spaces_pattern = re.compile("\s{2,}")
 
     main(sys.argv[1])
 
