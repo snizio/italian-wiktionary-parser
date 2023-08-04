@@ -17,6 +17,15 @@ def remove_list_tokens(line):
         return remove_list_tokens(line[1:])
     else:
         return line
+    
+def remove_punct_at_start(line):
+    """Recursively removes punctuation at the beginning of a string often resulting from the text cleaning"""
+    if line == "":
+        return line
+    elif line[0] in punctuation:
+        return remove_punct_at_start(line[1:])
+    else:
+        return line
 
 def lang_check(line, lemma):
     """Check for the italian language tag, usually something like =={{-it-}}==."""
@@ -59,8 +68,11 @@ def sill_check(line):
 def get_sill(line, lemma):
     """Extracts the syllables from a line"""
     if line[0] == ";": 
-        parsed_dict[lemma]["meta"]["sill"] = line[1:].replace(" ", "").split("|") # it splits the sill string into ["ca", "sa"] for example
-        return True
+        line = line[1:]
+        sill_split = [x for x in line.replace(" ", "").split("|") if x != ""] # it splits the sill string into ["ca", "sa"] for example
+        if sill_split == [""] or len(max(sill_split, key=len, default="")) > 5:
+            return False
+        parsed_dict[lemma]["meta"]["sill"] = sill_split
     else:
         return False
 
@@ -95,6 +107,7 @@ def morpho_check(line, lemma, pos):
     match = re.search(morpho_pattern, line) # informazioni morfologiche
     if match != None:
         morpho = match.group(1).strip() # talvolta c'è uno spazio all'inizio
+        morpho = remove_punct_at_start(morpho)
         parsed_dict[lemma]["meanings"][pos]["morpho"] = morpho
         return True
 
@@ -134,6 +147,7 @@ def get_etim(line, lemma):
     cleaned_line = re.sub(quote_marks_pattern, "", cleaned_line)
     cleaned_line = re.sub(general_tag_pattern, r"\1", cleaned_line)
     cleaned_line = re.sub(white_spaces_pattern, " ", cleaned_line)
+    cleaned_line = remove_punct_at_start(cleaned_line)
     cleaned_line = cleaned_line.strip()
     if parsed_dict[lemma]["meta"]["etim"] == "":
         parsed_dict[lemma]["meta"]["etim"] += cleaned_line
@@ -157,6 +171,7 @@ def glossa_check(line, lemma, pos):
     cleaned_line = re.sub(quote_marks_pattern, "", cleaned_line)
     cleaned_line = re.sub(general_tag_pattern, r"\1", cleaned_line)
     cleaned_line = re.sub(white_spaces_pattern, " ", cleaned_line)
+    cleaned_line = remove_punct_at_start(cleaned_line)
     cleaned_line = cleaned_line.strip()
     if parsed_dict[lemma]["meanings"][pos]["glossa"] == "":
         parsed_dict[lemma]["meanings"][pos]["glossa"] += cleaned_line
@@ -315,6 +330,7 @@ if __name__ == "__main__":
                           "verbm form": "verb form",
                           "agg num form": "agg num",
                           "adj": "agg",
+                          "adj form": "agg form",
                           "prefissoide": "pref"}
 
     parsed_dict = {} # dictionary
@@ -327,6 +343,8 @@ if __name__ == "__main__":
     # Extract the namespace from the root element
     NAMESPACE = root.tag.split("}")[0] + "}"
     del context
+
+    punctuation = '!"$%&\')*+,-./:;<=>?@[\\]^_`{|}~ ' # all punct + white space excluding the "#" special character used for Term tags
 
     # compiling regex
     lang_pattern = re.compile("=={{-?(.+?)-?}}==")
@@ -348,8 +366,9 @@ if __name__ == "__main__":
     ref_pattern = re.compile("<ref.*?>.*?<\/ref>|<ref.*?\/>")
     general_tag_pattern = re.compile("<.+?>(.+?)<\/.+?>") 
     lang_pointer_pattern = re.compile("{{(\w+)}}")
-    tag_term_pattern = re.compile("\{\{[Tt]erm\|(.*?)\|it\}\}")
+    tag_term_pattern = re.compile("\{\{[Tt]erm\|([\w ]+)(?:\|it)?(?:[\|\w ])*\}\}")
     white_spaces_pattern = re.compile("\s{2,}")
+    char_pattern = re.compile("[a-zA-Z]")
 
     main(sys.argv[1])
 
