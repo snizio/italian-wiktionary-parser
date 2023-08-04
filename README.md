@@ -29,4 +29,5 @@ There are inconsistencies due to shallow tagging by the wiktionary users and the
 The dumps are taken from https://dumps.wikimedia.org/itwiktionary/20230701/.
 
 If you want to run the parser on your xml dump, run it from command line with the following statement: 
+
 python iterparse.py xml_dump_path out_path
