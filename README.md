@@ -19,7 +19,7 @@ For example, the lemma "grana" will be structured as follows:
   'sill': ['grà', 'na'],
   'etim': 'da "(formaggio) di grana"'},
  'meanings': {'sost_0': {'morpho': 'f sing',
-   'glossa': 'oggetto granuloso\n##familiare##  seccatura'},
+   'glossa': 'oggetto granuloso\n##familiare## seccatura'},
   'sost_1': {'morpho': 'm inv',
    'glossa': "##gastronomia## formaggio caratteristico dell'Emilia e della Lombardia"},
   'sost_2': {'morpho': 'f inv', 'glossa': '##gergale## ##popolare## soldi'}}}
