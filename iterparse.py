@@ -64,13 +64,44 @@ def sill_check(line):
     match = re.search(sill_pattern, line) # sill
     if match != None:
         return True
+
+def sill_splitter(line):
+    """Split the syllables """
+
+    sill = []
+    current_sill = ""
+    line = line.strip()
+    line = line.replace("'", "")
+    line = re.sub(closing_tag_pattern, "", line)
+    for i in range(len(line)):
+        char = line[i]
+        if char == " ":
+            continue
+        elif char == "|" and current_sill != "":
+            sill.append(current_sill)
+            current_sill = ""
+        elif char in ["-", "–"] and current_sill != "":
+            sill.append(current_sill)
+            sill.append("-")
+            current_sill = ""
+        elif i == len(line)-1:
+            current_sill += char
+            sill.append(current_sill)
+        else:
+            current_sill += char
+    
+    sill = [x for x in sill if x != ""]
+
+    return sill
     
 def get_sill(line, lemma):
     """Extracts the syllables from a line"""
     if line[0] == ";": 
         line = line[1:]
-        sill_split = [x for x in line.replace(" ", "").split("|") if x != ""] # it splits the sill string into ["ca", "sa"] for example
-        if sill_split == [""] or len(max(sill_split, key=len, default="")) > 5:
+        if line == " &lt;!-- inserire dopo le ; la sillabazione indicando l'accento e dividendo con un | come nell'esempio: sol | dà | to --&gt;": # common placeholder for wrong syllabation
+            return False
+        sill_split = sill_splitter(line) # it splits the sill string into ["ca", "sa"] for example, handles multi word lemmas too (usually separated with "-")
+        if sill_split == [""] or len(max(sill_split, key=len, default="")) > 7:
             return False
         parsed_dict[lemma]["meta"]["sill"] = sill_split
     else:
@@ -106,8 +137,15 @@ def morpho_check(line, lemma, pos):
     """Checks and extracts morphological metadata (i.e. "f sing" from a typical morpho line: {{Pn|w}} ''f sing'' )"""
     match = re.search(morpho_pattern, line) # informazioni morfologiche
     if match != None:
-        morpho = match.group(1).strip() # talvolta c'è uno spazio all'inizio
-        morpho = remove_punct_at_start(morpho)
+        morpho = ""
+        for group in match.groups():
+            if group != None:
+                if morpho == "":
+                    morpho += group
+                else:
+                    morpho += " e "+group
+        morpho = remove_punct_at_start(morpho.strip())
+        morpho = re.sub(white_spaces_pattern, "", morpho)
         parsed_dict[lemma]["meanings"][pos]["morpho"] = morpho
         return True
 
@@ -350,7 +388,7 @@ if __name__ == "__main__":
     lang_pattern = re.compile("=={{-?(.+?)-?}}==")
     vedi_pattern = re.compile("{{[Vv]d\|(.*?)}}")
     pos_pattern = re.compile("{{-(.*?)-\|(?:\|?.*?)*}}")
-    morpho_pattern = re.compile("(?:{{Pn.*?}}|{{pn.*?}})(?:\s{1,3})?''(.*?)''") 
+    morpho_pattern = re.compile("{{[Pp][Nn].*?}}(?:\s{1,5})?''((?:m|f|inv).*?)''(?: e ''((?:m|f|inv).*?)'')?") 
     # glossa_pattern = re.compile("\[\[(-?\w*?-?(?:\s?\w*?)*)\]\]|\[\[\w*?(?:#\w*)?\|(.*?)\]\]")
     special_redirect_pattern = re.compile("\[\[[^\[\]]+?\|(.+?)\]\]") # [[:w:.... ... | .... ....]] [[:s:.... ... | .... ....]] 
     redirect_pattern = re.compile("\[\[(.*?)\]\]")  
@@ -365,6 +403,7 @@ if __name__ == "__main__":
     file_pattern = re.compile("\[\[File:.*?\]\]")
     ref_pattern = re.compile("<ref.*?>.*?<\/ref>|<ref.*?\/>")
     general_tag_pattern = re.compile("<.+?>(.+?)<\/.+?>") 
+    closing_tag_pattern = re.compile("<.+?/>")
     lang_pointer_pattern = re.compile("{{(\w+)}}")
     tag_term_pattern = re.compile("\{\{[Tt]erm\|([\w ]+)(?:\|it)?(?:[\|\w ])*\}\}")
     white_spaces_pattern = re.compile("\s{2,}")
