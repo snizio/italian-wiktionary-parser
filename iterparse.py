@@ -136,6 +136,8 @@ def check_pos(lemma, line, i_pos, current_pos):
     
 def morpho_check(line, lemma, pos):
     """Checks and extracts morphological metadata (i.e. "f sing" from a typical morpho line: {{Pn|w}} ''f sing'' )"""
+    if lemma == "grana":
+        pass
     match = re.search(morpho_pattern, line) # informazioni morfologiche
     if match != None:
         morpho = ""
@@ -417,7 +419,7 @@ if __name__ == "__main__":
     lang_pattern = re.compile("=={{-?(.+?)-?}}==")
     vedi_pattern = re.compile("{{[Vv]d\|(.*?)}}")
     pos_pattern = re.compile("{{-(.*?)-\|(?:\|?.*?)*}}")
-    morpho_pattern = re.compile("{{[Pp][Nn].*?}}(?:\s{1,5})?''((?:m|f|inv).*?)''(?: e ''((?:m|f|inv).*?)'')?") 
+    morpho_pattern = re.compile("{{[Pp][Nn].*?}}(?:\s{1,5})?''\s?((?:m|f|inv).*?)\s?''\s?(?: e ''((?:m|f|inv).*?)\s?'')?") 
     # glossa_pattern = re.compile("\[\[(-?\w*?-?(?:\s?\w*?)*)\]\]|\[\[\w*?(?:#\w*)?\|(.*?)\]\]")
     special_redirect_pattern = re.compile("\[\[[^\[\]]+?\|(.+?)\]\]") # [[:w:.... ... | .... ....]] [[:s:.... ... | .... ....]] 
     redirect_pattern = re.compile("\[\[(.*?)\]\]")  
