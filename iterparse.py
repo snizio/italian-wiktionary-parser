@@ -104,6 +104,7 @@ def get_sill(line, lemma):
         if sill_split == [""] or len(max(sill_split, key=len, default="")) > 7:
             return False
         parsed_dict[lemma]["meta"]["sill"] = sill_split
+        return True
     else:
         return False
 
@@ -156,16 +157,32 @@ def etim_check(line):
         return True
 
 def noetim_check(line):
-    """Checks fot the {{Noetim|it}} tag. Usually used when the etim is missing"""
+    """Checks for the {{Noetim|it}} tag. Usually used when the etim is missing"""
     match = re.search(noetim_pattern, line)
     if match != None:
         return True
     
 def nodef_check(line):
-    """Checks fot the {{Nodef|it}} tag. Usually used when the glossa is missing"""
+    """Checks for the {{Nodef|it}} tag. Usually used when the glossa is missing"""
     match = re.search(nodef_pattern, line)
     if match != None:
         return True
+
+def template_utili_check(line):
+    """Checks for the "template utili" line"""
+    match = re.search(template_utili_pattern, line)
+    if match != None:
+        return True
+    else:
+        return False
+    
+def other_tags_check(line):
+    """Tags that usually follows the one we are interested in. So if we find them we break. The order is taken from https://it.wiktionary.org/wiki/Wikizionario:Altri_titoli"""
+    other_tag = ["{{-sin-}}", "{{-ant-}}", "{{-der-}}", "{{-rel-}}", "{{-var-}}", "{{-alter-}}", "{{-ipon-}}", "{{-iperon-}}", "{{-noconf-}}", "{{-prov-}}", "{{-trad-}}", "{{Trad1}}", "{{Trad2}}", "{{-ref-}}", "==Altri progetti==", "{{interprogetto}}"]
+    line = line.strip()
+    for tag in other_tag:
+        if tag == line:
+            return True
 
 def get_etim(line, lemma):
     """Extracts and parses the etim"""
@@ -187,6 +204,8 @@ def get_etim(line, lemma):
     cleaned_line = re.sub(white_spaces_pattern, " ", cleaned_line)
     cleaned_line = remove_punct_at_start(cleaned_line)
     cleaned_line = cleaned_line.strip()
+    if cleaned_line == "":
+        return
     if parsed_dict[lemma]["meta"]["etim"] == "":
         parsed_dict[lemma]["meta"]["etim"] += cleaned_line
     else:
@@ -211,6 +230,8 @@ def glossa_check(line, lemma, pos):
     cleaned_line = re.sub(white_spaces_pattern, " ", cleaned_line)
     cleaned_line = remove_punct_at_start(cleaned_line)
     cleaned_line = cleaned_line.strip()
+    if cleaned_line == "":
+        return
     if parsed_dict[lemma]["meanings"][pos]["glossa"] == "":
         parsed_dict[lemma]["meanings"][pos]["glossa"] += cleaned_line
     else:
@@ -248,6 +269,10 @@ def main(xml_dump_path):
 
                             if line == "":
                                 continue
+
+                            if line[0] == "<":
+                                if template_utili_check(line): # line usually found at the end of a glossa referencing templates
+                                    break # we break it here since a lot of template tags could trigger the boolean flags 
 
                             if pron_flag:
                                 pron_flag = get_ipa(line, lemma)
@@ -298,6 +323,10 @@ def main(xml_dump_path):
                             if not unk_pos_flag: # di default si mette sempre una pos unk
                                 current_pos = unk_pos(lemma)
                                 unk_pos_flag = True
+                            
+                            if line.strip()[:2] == "{{":
+                                if other_tags_check(line):
+                                    break
                             
                             pos = check_pos(lemma, line, i_pos, current_pos)
                             if pos == "sill": # there are 4 cases where the sill tag is written like a PoS, this if statement handles this. (Due to bad annotation)
@@ -408,6 +437,7 @@ if __name__ == "__main__":
     tag_term_pattern = re.compile("\{\{[Tt]erm\|([\w ]+)(?:\|it)?(?:[\|\w ])*\}\}")
     white_spaces_pattern = re.compile("\s{2,}")
     char_pattern = re.compile("[a-zA-Z]")
+    template_utili_pattern = re.compile("<!-- altri template utili:") # line usually found at the end of a glossa referencing templates
 
     main(sys.argv[1])
 
