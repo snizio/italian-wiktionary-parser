@@ -29,6 +29,16 @@ def remove_punct_at_start(line):
     else:
         return line
 
+def remove_punct_at_end(line):
+    """Recursively removes punctuation at the end of a string often resulting from the text cleaning"""
+    reverse_line = line[::-1]
+    if line == "":
+        return line
+    elif reverse_line[0] in punctuation:
+        return remove_punct_at_start(reverse_line[1:])[::-1]
+    else:
+        return line
+
 def lang_check(line, lemma):
     """Check for the italian language tag, usually something like =={{-it-}}==."""
     line = line.replace(" ", "") # removing white spaces for conformity
@@ -175,7 +185,6 @@ def sin_ant_check(line):
     else:
         return False
 
-    
 def nodef_check(line):
     """Checks for the {{Nodef|it}} tag. Usually used when the glossa is missing"""
     match = re.search(nodef_pattern, line)
@@ -234,10 +243,10 @@ def get_etim(line, lemma):
 def get_sin_ant(line, lemma, sin_ant):
     """Extracts and parses the synonym and antonym informations"""
     cleaned_line = string_cleaner(line, lemma)
-    sin_ant_list = [x.strip() for x in cleaned_line.split(",") if x != ""]
-    if sin_ant_list == []:
+    cleaned_line = remove_punct_at_end(cleaned_line)
+    if cleaned_line == "":
         return
-    parsed_dict[lemma]["meta"][sin_ant].extend(sin_ant_list)
+    parsed_dict[lemma]["meta"][sin_ant].append(cleaned_line)
     
 def glossa_check(line, lemma, pos):
     """Extracts and parses the glossa"""
@@ -285,7 +294,6 @@ def main(xml_dump_path):
                                 sill_flag = False
                                 etim_flag = False
                                 pron_flag = False
-                                # maybe turn off every flag here
                                 continue
 
                             if line[0] == "<":
