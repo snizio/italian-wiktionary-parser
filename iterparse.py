@@ -13,6 +13,8 @@ def prepend_ns(s):
 
 def remove_list_tokens(line):
     """Recursively removes special tokens (*, #, :) at the beginning of a line in a list."""
+    if line == "":
+        return line
     if line[0] in ["*", "#", ":"]:
         return remove_list_tokens(line[1:])
     else:
@@ -36,7 +38,7 @@ def lang_check(line, lemma):
         if lang == None:
             lang = match.group(2)
         if lang == "it":
-            parsed_dict[lemma] = {"meta": {"ipa": [], "sill": [], "etim": ""}, "meanings": {}}
+            parsed_dict[lemma] = {"meta": {"ipa": [], "sill": [], "etim": "", "sin": [], "ant": []}, "meanings": {}}
             return lang, True
         else:
             return lang, False
@@ -136,8 +138,6 @@ def check_pos(lemma, line, i_pos, current_pos):
     
 def morpho_check(line, lemma, pos):
     """Checks and extracts morphological metadata (i.e. "f sing" from a typical morpho line: {{Pn|w}} ''f sing'' )"""
-    if lemma == "grana":
-        pass
     match = re.search(morpho_pattern, line) # informazioni morfologiche
     if match != None:
         morpho = ""
@@ -163,6 +163,18 @@ def noetim_check(line):
     match = re.search(noetim_pattern, line)
     if match != None:
         return True
+
+def sin_ant_check(line):
+    match = re.search(sin_ant_pattern, line)
+    tag = ""
+    if match != None:
+        for g in match.groups():
+            if g != None:
+                tag = g
+        return tag
+    else:
+        return False
+
     
 def nodef_check(line):
     """Checks for the {{Nodef|it}} tag. Usually used when the glossa is missing"""
@@ -180,14 +192,14 @@ def template_utili_check(line):
     
 def other_tags_check(line):
     """Tags that usually follows the one we are interested in. So if we find them we break. The order is taken from https://it.wiktionary.org/wiki/Wikizionario:Altri_titoli"""
-    other_tag = ["{{-sin-}}", "{{-ant-}}", "{{-der-}}", "{{-rel-}}", "{{-var-}}", "{{-alter-}}", "{{-ipon-}}", "{{-iperon-}}", "{{-noconf-}}", "{{-prov-}}", "{{-trad-}}", "{{Trad1}}", "{{Trad2}}", "{{-ref-}}", "==Altri progetti==", "{{interprogetto}}"]
+    other_tag = ["{{-der-}}", "{{-rel-}}", "{{-var-}}", "{{-alter-}}", "{{-ipon-}}", "{{-iperon-}}", "{{-noconf-}}", "{{-prov-}}", "{{-trad-}}", "{{Trad1}}", "{{Trad2}}", "{{-ref-}}", "==Altri progetti==", "{{interprogetto}}"]
     line = line.strip()
     for tag in other_tag:
         if tag == line:
             return True
 
-def get_etim(line, lemma):
-    """Extracts and parses the etim"""
+def string_cleaner(line, lemma):
+    """Cleans a string from the usual wikimedia tags"""
     line = remove_list_tokens(line)
     cleaned_line = re.sub("{{Pn}}|{{pn}}", lemma, line)
     cleaned_line = re.sub(ref_pattern, "", cleaned_line)
@@ -206,32 +218,30 @@ def get_etim(line, lemma):
     cleaned_line = re.sub(white_spaces_pattern, " ", cleaned_line)
     cleaned_line = remove_punct_at_start(cleaned_line)
     cleaned_line = cleaned_line.strip()
+    
+    return cleaned_line
+
+def get_etim(line, lemma):
+    """Extracts and parses the etim"""
+    cleaned_line = string_cleaner(line, lemma)
     if cleaned_line == "":
         return
     if parsed_dict[lemma]["meta"]["etim"] == "":
         parsed_dict[lemma]["meta"]["etim"] += cleaned_line
     else:
         parsed_dict[lemma]["meta"]["etim"] += "\n"+cleaned_line
+
+def get_sin_ant(line, lemma, sin_ant):
+    """Extracts and parses the synonym and antonym informations"""
+    cleaned_line = string_cleaner(line, lemma)
+    sin_ant_list = [x.strip() for x in cleaned_line.split(",") if x != ""]
+    if sin_ant_list == []:
+        return
+    parsed_dict[lemma]["meta"][sin_ant].extend(sin_ant_list)
     
 def glossa_check(line, lemma, pos):
     """Extracts and parses the glossa"""
-    line = remove_list_tokens(line)
-    cleaned_line = re.sub("{{Pn}}|{{pn}}", lemma, line)
-    cleaned_line = re.sub(ref_pattern, "", cleaned_line)
-    cleaned_line = re.sub(file_pattern, "", cleaned_line)
-    cleaned_line = re.sub(vedi_pattern, lambda m: "vedi " + m.group(1).split("|")[1] if "|" in m.group(1) else "vedi " + m.group(1) , cleaned_line) # {{Vd|Afghanistan#Italiano|Afghanistan}} ---> vedi Afghanistan
-    cleaned_line = re.sub(lang_pointer_pattern, lambda m: lang_dict.get(m.group(1), m.group(0)), cleaned_line)
-    # cleaned_line = re.sub(special_redirect_pattern, r"\1", cleaned_line)
-    cleaned_line = re.sub(tag_term_pattern, r"##\1##", cleaned_line)
-    cleaned_line = re.sub("{{.*?}}", "", cleaned_line)
-    cleaned_line = re.sub(special_redirect_pattern, r"\1", cleaned_line)
-    cleaned_line = re.sub(redirect_pattern, r"\1", cleaned_line)
-    cleaned_line = re.sub("\[\[\w.*?\]\]", "", cleaned_line)
-    cleaned_line = re.sub(quote_marks_pattern, "", cleaned_line)
-    cleaned_line = re.sub(general_tag_pattern, r"\1", cleaned_line)
-    cleaned_line = re.sub(white_spaces_pattern, " ", cleaned_line)
-    cleaned_line = remove_punct_at_start(cleaned_line)
-    cleaned_line = cleaned_line.strip()
+    cleaned_line = string_cleaner(line, lemma)
     if cleaned_line == "":
         return
     if parsed_dict[lemma]["meanings"][pos]["glossa"] == "":
@@ -262,6 +272,7 @@ def main(xml_dump_path):
                     elenco_flag = False
                     etim_flag = False
                     pron_flag = False
+                    sin_ant_flag = False
                     i_pos = 0
 
                     try:
@@ -270,6 +281,11 @@ def main(xml_dump_path):
                             line = lines[i]
 
                             if line == "":
+                                sin_ant_flag = False
+                                sill_flag = False
+                                etim_flag = False
+                                pron_flag = False
+                                # maybe turn off every flag here
                                 continue
 
                             if line[0] == "<":
@@ -300,6 +316,13 @@ def main(xml_dump_path):
                                     get_etim(line, lemma)
                                     etim_flag = False                              
                                     continue 
+                            
+                            if sin_ant_flag != False:
+                                if line[0] == "*":
+                                    get_sin_ant(line, lemma, sin_ant_flag)
+                                    continue
+                                else:
+                                    sin_ant_flag = False
 
                             if line.find("{{Vedi|") != -1:
                                 continue
@@ -363,6 +386,11 @@ def main(xml_dump_path):
 
                             etim_flag = etim_check(line)
                             if etim_flag:
+                                elenco_flag = False
+                                continue
+
+                            sin_ant_flag = sin_ant_check(line)
+                            if sin_ant_flag != False:
                                 elenco_flag = False
                                 continue
 
@@ -440,6 +468,7 @@ if __name__ == "__main__":
     white_spaces_pattern = re.compile("\s{2,}")
     char_pattern = re.compile("[a-zA-Z]")
     template_utili_pattern = re.compile("<!-- altri template utili:") # line usually found at the end of a glossa referencing templates
+    sin_ant_pattern = re.compile("{{-(sin)-}}|{{-(ant)-}}")
 
     main(sys.argv[1])
 

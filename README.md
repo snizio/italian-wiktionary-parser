@@ -7,6 +7,7 @@ Each lemma is structured in a dictionary with two keys: "meta" and "meanings":
   - "ipa": the IPA phonetic transcription (as a list since there can be more IPA for a single lemma).
   - "sill": hyphenation (also as a list of syllables).
   - "etim": etymology.
+  - "sin" and "ant": list of synonyms and antonyms.
 - "meanings":
   - Each meaning is disambiguated by the Part of Speech (PoS) as reported by Wiktionary. So for each PoS we have:
     - "morpho": the morphological information (if available, usually never available for verbs).
@@ -15,14 +16,62 @@ Each lemma is structured in a dictionary with two keys: "meta" and "meanings":
 For example, the lemma "grana" will be structured as follows:
 
 ```
-{'meta': {'ipa': ['ˈɡrana'],
-  'sill': ['grà', 'na'],
-  'etim': 'da "(formaggio) di grana"'},
- 'meanings': {'sost_0': {'morpho': 'f sing',
-   'glossa': 'oggetto granuloso\n##familiare## seccatura'},
-  'sost_1': {'morpho': 'm inv',
-   'glossa': "##gastronomia## formaggio caratteristico dell'Emilia e della Lombardia"},
-  'sost_2': {'morpho': 'f inv', 'glossa': '##gergale## ##popolare## soldi'}}}
+{
+  'meta': {
+    'ipa': [
+      'ˈɡrana'
+    ],
+    'sill': [
+      'grà',
+      'na'
+    ],
+    'etim': 'da "(formaggio) di grana"',
+    'sin': [
+      'grossezza',
+      'granulosità',
+      'struttura granulare',
+      'ruvidità',
+      'rugosità',
+      'scabrosità',
+      'color carminio',
+      '##familiare## seccatura',
+      'fastidio',
+      'noia',
+      'guaio',
+      'grattacapo',
+      'pasticcio',
+      'rogna',
+      'impiccio',
+      'parmigiano reggiano',
+      'denaro',
+      'soldi',
+      'quattrini',
+      'gruzzolo',
+      'malloppo',
+      'granello',
+      'particella'
+    ],
+    'ant': [
+      'levigatezza',
+      '##familiare## piacere',
+      'divertimento'
+    ]
+  },
+  'meanings': {
+    'sost_0': {
+      'morpho': 'f sing',
+      'glossa': 'oggetto granuloso\n##familiare## seccatura'
+    },
+    'sost_1': {
+      'morpho': 'm inv',
+      'glossa': "##gastronomia## formaggio caratteristico dell'Emilia e della Lombardia"
+    },
+    'sost_2': {
+      'morpho': 'f inv',
+      'glossa': '##gergale## ##popolare## soldi'
+    }
+  }
+}
 ```
 
 There are inconsistencies due to shallow tagging by the wiktionary users and the weird complexity of the tag system. Right now, of the 370k lemmas, 4k have no glossa and 14k no etymology (mostly because absent from the Wiktionary, rarely due to parsing errors).
