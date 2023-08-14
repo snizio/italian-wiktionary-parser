@@ -11,7 +11,7 @@ Each lemma is structured in a dictionary with two keys: "meta" and "meanings":
 - "meanings":
   - Each meaning is disambiguated by the Part of Speech (PoS) as reported by Wiktionary. So for each PoS we have:
     - "morpho": the morphological information (if available, usually never available for verbs).
-    - "glossa": each definition is separated by a "\n". Examples are discarded. Tags entries, like i.e. {{Term|Astrologia|it}}, are kept (like this ##Astrologia##) since they add an interesting categorization.
+    - "glossa": each definition is separated by a "\n". Examples are discarded most of the time. Tags entries, like i.e. {{Term|Astrologia|it}}, are kept (like this ##Astrologia##) since they add an interesting categorization.
 
 For example, the lemma "neologismo" will be structured as follows:
 
