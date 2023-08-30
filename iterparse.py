@@ -431,9 +431,7 @@ if __name__ == "__main__":
     # use the following dictionary as a PoS converter. The following key value pairs handles some tag errors made by users 
     pos_converter_dict = {"suffissoide": "suff",
                           "voce verb": "verb",
-                          "nome form": "nome",
                           "verbm form": "verb form",
-                          "agg num form": "agg num",
                           "adj": "agg",
                           "adj form": "agg form",
                           "prefissoide": "pref"}
