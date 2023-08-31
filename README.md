@@ -32,3 +32,8 @@ The dumps are taken from https://dumps.wikimedia.org/itwiktionary/20230701/.
 If you want to run the parser on your xml dump, run it from command line with the following statement: 
 
 python iterparse.py xml_dump_path out_path
+
+The repository also contains vdb_lemmas.txt wich is a list of around 7k most frequent and foundamental lemmas in the italian lexicon extracted from the "Nuovo vocabolario di base della lingua italiana", De Mauro (1). This resource was extracted in order to assess the Wikizionario coverage of the VdB lemmas, wich is, as august 2023, of 97.67%.
+
+
+(1) De Mauro, Tullio, and I. Chiari. "Il Nuovo vocabolario di base della lingua italiana." Internazionale.[28/11/2020]. https://www.internazionale.it/opinione/tullio-de-mauro/2016/12/23/il-nuovo-vocabolario-di-base-della-lingua-italiana (2016).
