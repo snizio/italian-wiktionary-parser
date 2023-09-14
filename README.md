@@ -1,5 +1,5 @@
 # italian-wiktionary-parser
-This repository contains a python script for parsing the xml dump of the Italian Wiktionary (Wikizionario). It also contains the parsed dictionary in a json file with 370k lemmas circa. As far as I'm concerned, this is the first repo ever offering an italian dictionary as a free resource. This was made available to enhance NLP tasks that needs similar type of corpora. Since the Wiktionary is multilingual, here I kept only words that has an Italian tag definition =={{-it-}}== (that is, Italian words and frequently used non-Italian words with Italian definitions). 
+This repository contains a python script for parsing the xml dump of the Italian Wiktionary (Wikizionario). It also contains the parsed dictionary in a compressed json file (it-dictionary.gz) with 370k lemmas circa. As far as I'm concerned, this is the first repo ever offering an italian dictionary as a free resource. This was made available to enhance NLP tasks that needs similar type of corpora. Since the Wiktionary is multilingual, here I kept only words that has an Italian tag definition =={{-it-}}== (that is, Italian words and frequently used non-Italian words with Italian definitions). 
 
 Each lemma is structured in a dictionary with two keys: "meta" and "meanings":
 
@@ -23,7 +23,8 @@ For example, the lemma "neologismo" will be structured as follows:
    'neologia'],
   'ant': ['arcaismo']},
  'meanings': {'sost_0': {'morpho': 'm sing',
-   'glossa': '##linguistica## termine, concetto o costrutto introdotto di recente nella lingua'}}}
+   'glossa': '##linguistica## termine, concetto o costrutto introdotto di recente nella lingua',
+   'examples': 'il neologismo può essere riferito a nuovi concetti come nel lemma allunaggio\nil neologismo è inerente ad oggetti o prodotti innovativi come musicassetta\nil neologismo può assumere nuovi significati come la "pantera della polizia" cioè l\'auto di pronto intervento della Polizia\nil neologismo può derivare da parole straniere come scannerizzare\nil neologismo può essere creato dalla composizione di parole già esistenti come mangia e nastri da cui il lemma mangianastri\nil neologismo può essere frutto di parole totalmente nuove come quark'}}
 ```
 
 There are inconsistencies due to shallow tagging by the wiktionary users and the weird complexity of the tag system. Right now, of the 370k lemmas, 4k have no glossa and 14k no etymology (mostly because absent from the Wiktionary, rarely due to parsing errors).
@@ -31,7 +32,15 @@ The dumps are taken from https://dumps.wikimedia.org/itwiktionary/20230701/.
 
 If you want to run the parser on your xml dump, run it from command line with the following statement: 
 
+```
 python iterparse.py xml_dump_path out_path
+```
+
+To decompress and save the compressed dictionary into .json file run the following command:
+
+```
+python decompress_and_save.py compressed_dictionary json_out_path
+```
 
 The repository also contains vdb_lemmas.txt wich is a list of around 7k most frequent and foundamental lemmas in the italian lexicon extracted from the "Nuovo vocabolario di base della lingua italiana", De Mauro (1). This resource was extracted in order to assess the Wikizionario coverage of the VdB lemmas, wich is, as august 2023, of 97.67%.
 

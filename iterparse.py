@@ -4,6 +4,7 @@ from tqdm import tqdm
 import pandas as pd
 import json
 import sys
+import gzip
 
 
 
@@ -123,7 +124,7 @@ def get_sill(line, lemma):
 def unk_pos(lemma):
     """Adds the "unk" (unknown) PoS tag to a lemma"""
     pos = "unk" # default option due to inconsistencies in the italian wiktionary tag system
-    parsed_dict[lemma]["meanings"][pos] = {"morpho":"", "glossa":""}
+    parsed_dict[lemma]["meanings"][pos] = {"morpho":"", "glossa":"", "examples": ""}
     return pos
 
 def check_pos(lemma, line, i_pos, current_pos):
@@ -139,7 +140,7 @@ def check_pos(lemma, line, i_pos, current_pos):
         pos = pos.strip() + f"_{i_pos}"
         if pos != current_pos and pos != f"Varie lingue_{i_pos}":
             current_pos = pos
-            parsed_dict[lemma]["meanings"][pos] = {"morpho":"", "glossa":""}
+            parsed_dict[lemma]["meanings"][pos] = {"morpho":"", "glossa":"", "examples": ""}
             if "unk" in parsed_dict[lemma]["meanings"]:
                 del parsed_dict[lemma]["meanings"]["unk"] # if we find a PoS we delete the "unk" one
         return pos
@@ -257,6 +258,16 @@ def glossa_check(line, lemma, pos):
         parsed_dict[lemma]["meanings"][pos]["glossa"] += cleaned_line
     else:
         parsed_dict[lemma]["meanings"][pos]["glossa"] += "\n"+cleaned_line
+
+def get_examples(line, lemma, pos):
+    """Extracts and parses usage examples from the glossa"""
+    cleaned_line = string_cleaner(line, lemma)
+    if cleaned_line == "":
+        return
+    if parsed_dict[lemma]["meanings"][pos]["examples"] == "":
+        parsed_dict[lemma]["meanings"][pos]["examples"] += cleaned_line
+    else:
+        parsed_dict[lemma]["meanings"][pos]["examples"] += "\n"+cleaned_line
 
 
 def main(xml_dump_path):
@@ -409,6 +420,7 @@ def main(xml_dump_path):
                                     elenco_flag = True
                                 try:
                                     if line[1] in ["*", ":"] and not elenco_flag: # examples
+                                        get_examples(line, lemma, current_pos)
                                         continue
                                 except IndexError:
                                     continue # if line[1:] is empty
@@ -480,9 +492,10 @@ if __name__ == "__main__":
 
     print(f"The xml dump was completely parsed! {len(parsed_dict)} lemmas were extracted.\nSaving the file (this can take some seconds depending on the size of the dictionary)...")
 
-    with open(sys.argv[2], "w") as f:
-        json.dump(parsed_dict, f)
+    json_str = json.dumps(parsed_dict).encode('utf-8')  # Convert to string and then to bytes
+    with gzip.GzipFile(sys.argv[2], 'wb') as f:
+        f.write(json_str)
 
-    print(f"File saved at {sys.argv[2]}.")
+    print(f"Compressed file saved at {sys.argv[2]}.")
 
 # from command line: python iterparse.py xml_dump_path out_path
