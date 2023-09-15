@@ -241,13 +241,36 @@ def get_etim(line, lemma):
     else:
         parsed_dict[lemma]["meta"]["etim"] += "\n"+cleaned_line
 
+def split_sin_ant(text):
+    inside_parentheses = False
+    parts = []
+    current_part = []
+
+    for char in text:
+        if char == '(':
+            inside_parentheses = True
+        elif char == ')':
+            inside_parentheses = False
+
+        if char == ',' and not inside_parentheses:
+            parts.append(''.join(current_part).strip())
+            current_part = []
+        else:
+            current_part.append(char)
+
+    # Adding the last part
+    parts.append(''.join(current_part).strip())
+    
+    return parts
+
 def get_sin_ant(line, lemma, sin_ant):
     """Extracts and parses the synonym and antonym informations"""
     cleaned_line = string_cleaner(line, lemma)
     cleaned_line = remove_punct_at_end(cleaned_line)
     if cleaned_line == "":
         return
-    parsed_dict[lemma]["meta"][sin_ant].append(cleaned_line)
+    parsed_dict[lemma]["meta"][sin_ant].extend(split_sin_ant(cleaned_line))
+    parsed_dict[lemma]["meta"][sin_ant] = sorted(parsed_dict[lemma]["meta"][sin_ant]) # sort the sin ant in alphabetical order
     
 def glossa_check(line, lemma, pos):
     """Extracts and parses the glossa"""
