@@ -270,7 +270,7 @@ def get_sin_ant(line, lemma, sin_ant):
     if cleaned_line == "":
         return
     parsed_dict[lemma]["meta"][sin_ant].extend(split_sin_ant(cleaned_line))
-    parsed_dict[lemma]["meta"][sin_ant] = sorted(parsed_dict[lemma]["meta"][sin_ant]) # sort the sin ant in alphabetical order
+    parsed_dict[lemma]["meta"][sin_ant] = parsed_dict[lemma]["meta"][sin_ant]
     
 def glossa_check(line, lemma, pos):
     """Extracts and parses the glossa"""
