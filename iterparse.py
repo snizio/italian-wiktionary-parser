@@ -219,6 +219,7 @@ def string_cleaner(line, lemma):
     cleaned_line = re.sub(lang_pointer_pattern, lambda m: lang_dict.get(m.group(1), m.group(0)), cleaned_line)
     # cleaned_line = re.sub(special_redirect_pattern, r"\1", cleaned_line)
     cleaned_line = re.sub(tag_term_pattern, r"##\1##", cleaned_line)
+    cleaned_line = re.sub("({{\w*?}})", lambda m: ambito_dict.get(m.group(0)), cleaned_line)
     cleaned_line = re.sub("{{.*?}}", "", cleaned_line)
     cleaned_line = re.sub(special_redirect_pattern, r"\1", cleaned_line)
     cleaned_line = re.sub(redirect_pattern, r"\1", cleaned_line)
@@ -470,6 +471,10 @@ if __name__ == "__main__":
                           "adj": "agg",
                           "adj form": "agg form",
                           "prefissoide": "pref"}
+    
+    ambito_dict = {"{{Est}}": "(per estensione)",
+                    "{{Lett}}": "(letteralmente)",
+                    "{{Fig}}": "(senso figurato)"}
 
     parsed_dict = {} # dictionary
 
