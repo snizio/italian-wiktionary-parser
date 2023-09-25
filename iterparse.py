@@ -260,7 +260,7 @@ def clean_sin_ant(text):
             clean_text+=c
     clean_text = clean_text.replace(";", ",")
     if "," not in par_text and par_text != "":
-        return par_text.strip()+" -"+clean_text
+        return par_text.strip()+" - "+clean_text.strip()
     else:
         return clean_text
 
