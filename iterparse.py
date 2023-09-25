@@ -242,27 +242,27 @@ def get_etim(line, lemma):
     else:
         parsed_dict[lemma]["meta"]["etim"] += "\n"+cleaned_line
 
-def split_sin_ant(text):
-    inside_parentheses = False
-    parts = []
-    current_part = []
-
-    for char in text:
-        if char == '(':
-            inside_parentheses = True
-        elif char == ')':
-            inside_parentheses = False
-
-        if char == ',' and not inside_parentheses:
-            parts.append(''.join(current_part).strip())
-            current_part = []
+def clean_sin_ant(text):
+    """Splits sin and ant"""
+    inside_par = False
+    clean_text = ""
+    par_text = ""
+    for c in text:
+        if c == "(":
+            inside_par = True
+        elif c == ")":
+            par_text+=c+" "
+            inside_par = False
+            continue
+        if inside_par:
+            par_text+=c
         else:
-            current_part.append(char)
-
-    # Adding the last part
-    parts.append(''.join(current_part).strip())
-    
-    return parts
+            clean_text+=c
+    clean_text = clean_text.replace(";", ",")
+    if "," not in par_text and par_text != "":
+        return par_text.strip()+" -"+clean_text
+    else:
+        return clean_text
 
 def get_sin_ant(line, lemma, sin_ant):
     """Extracts and parses the synonym and antonym informations"""
@@ -270,8 +270,7 @@ def get_sin_ant(line, lemma, sin_ant):
     cleaned_line = remove_punct_at_end(cleaned_line)
     if cleaned_line == "":
         return
-    parsed_dict[lemma]["meta"][sin_ant].extend(split_sin_ant(cleaned_line))
-    parsed_dict[lemma]["meta"][sin_ant] = parsed_dict[lemma]["meta"][sin_ant]
+    parsed_dict[lemma]["meta"][sin_ant].append(clean_sin_ant(cleaned_line))
     
 def glossa_check(line, lemma, pos):
     """Extracts and parses the glossa"""
@@ -515,6 +514,7 @@ if __name__ == "__main__":
     char_pattern = re.compile("[a-zA-Z]")
     template_utili_pattern = re.compile("<!-- altri template utili:") # line usually found at the end of a glossa referencing templates
     sin_ant_pattern = re.compile("{{-(sin)-}}|{{-(ant)-}}")
+    parenthesis_pattern = re.compile("\(.*?\)")
 
     main(sys.argv[1])
 

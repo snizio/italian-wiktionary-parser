@@ -20,15 +20,13 @@ For example, the lemma "neologismo" will be structured as follows:
 {'meta': {'ipa': ['neoloˈd͡ʒizmo'],
   'sill': ['ne', 'o', 'lo', 'gì', 'smo'],
   'etim': 'composto dal prefisso neo- (che proviene dal Greco Moderno νεο- ossia "nuovo"), dal Greco Moderno λόγος cioè "parola", e dal suffisso "-ismo" per indicare l\'origine, ricalcando il Francese néologisme',
-  'sin': ['neologia',
-   'nuovo termine',
-   'nuovo vocabolo',
-   'parola nuova',
-   'parola recente'],
+  'sin': ['parola nuova, parola recente, nuovo vocabolo, nuovo termine',
+   'neologia'],
   'ant': ['arcaismo']},
  'meanings': {'sost_0': {'morpho': 'm sing',
    'glossa': '##linguistica## termine, concetto o costrutto introdotto di recente nella lingua',
    'examples': 'il neologismo può essere riferito a nuovi concetti come nel lemma allunaggio\nil neologismo è inerente ad oggetti o prodotti innovativi come musicassetta\nil neologismo può assumere nuovi significati come la "pantera della polizia" cioè l\'auto di pronto intervento della Polizia\nil neologismo può derivare da parole straniere come scannerizzare\nil neologismo può essere creato dalla composizione di parole già esistenti come mangia e nastri da cui il lemma mangianastri\nil neologismo può essere frutto di parole totalmente nuove come quark'}}}
+
 ```
 
 There are inconsistencies due to shallow tagging by the wiktionary users and the weird complexity of the tag system. Right now, of the 370k lemmas, 4k have no glossa and 14k no etymology (mostly because absent from the Wiktionary, rarely due to parsing errors).
