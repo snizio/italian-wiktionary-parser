@@ -247,6 +247,8 @@ def clean_sin_ant(text):
     inside_par = False
     clean_text = ""
     par_text = ""
+    hashs = re.findall(hash_pattern, text)
+    text = re.sub(hash_pattern, "", text)
     for c in text:
         if c == "(":
             inside_par = True
@@ -259,6 +261,8 @@ def clean_sin_ant(text):
         else:
             clean_text+=c
     clean_text = clean_text.replace(";", ",")
+    par_text+= " ".join(hashs)
+    clean_text = remove_punct_at_start(clean_text)
     if "," not in par_text and par_text != "":
         return par_text.strip()+" ** "+clean_text.strip()
     else:
@@ -515,6 +519,7 @@ if __name__ == "__main__":
     template_utili_pattern = re.compile("<!-- altri template utili:") # line usually found at the end of a glossa referencing templates
     sin_ant_pattern = re.compile("{{-(sin)-}}|{{-(ant)-}}")
     parenthesis_pattern = re.compile("\(.*?\)")
+    hash_pattern = re.compile("(##.*?##)")
 
     main(sys.argv[1])
 
