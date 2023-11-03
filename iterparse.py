@@ -272,9 +272,10 @@ def get_sin_ant(line, lemma, sin_ant):
     """Extracts and parses the synonym and antonym informations"""
     cleaned_line = string_cleaner(line, lemma)
     cleaned_line = remove_punct_at_end(cleaned_line)
+    cleaned_line = clean_sin_ant(cleaned_line)
     if cleaned_line == "":
         return
-    parsed_dict[lemma]["meta"][sin_ant].append(clean_sin_ant(cleaned_line))
+    parsed_dict[lemma]["meta"][sin_ant].append(cleaned_line)
     
 def glossa_check(line, lemma, pos):
     """Extracts and parses the glossa"""
