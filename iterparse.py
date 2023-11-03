@@ -394,7 +394,7 @@ def main(xml_dump_path):
                             if not lang_found:
                                 continue
                             
-                            if not unk_pos_flag: # di default si mette sempre una pos unk
+                            if not unk_pos_flag: # default pos unk
                                 current_pos = unk_pos(lemma)
                                 unk_pos_flag = True
                             
