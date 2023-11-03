@@ -313,6 +313,8 @@ def main(xml_dump_path):
                         continue
                     revision = elem.find(prepend_ns("revision"))
                     glossa = revision.find(prepend_ns("text")).text # this contains all the metadata for a specific lemma
+                    if glossa == None:
+                        continue
                     current_pos = ""
                     lang_found = False
                     sill_flag = False
