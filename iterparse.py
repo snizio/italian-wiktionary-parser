@@ -124,7 +124,7 @@ def get_sill(line, lemma):
 def unk_pos(lemma):
     """Adds the "unk" (unknown) PoS tag to a lemma"""
     pos = "unk" # default option due to inconsistencies in the italian wiktionary tag system
-    parsed_dict[lemma]["meanings"][pos] = {"morpho":"", "glossa":"", "examples": ""}
+    parsed_dict[lemma]["meanings"][pos] = {"morpho":"", "glossa":""}
     return pos
 
 def check_pos(lemma, line, i_pos, current_pos):
@@ -140,7 +140,7 @@ def check_pos(lemma, line, i_pos, current_pos):
         pos = pos.strip() + f"_{i_pos}"
         if pos != current_pos and pos != f"Varie lingue_{i_pos}":
             current_pos = pos
-            parsed_dict[lemma]["meanings"][pos] = {"morpho":"", "glossa":"", "examples": ""}
+            parsed_dict[lemma]["meanings"][pos] = {"morpho":"", "glossa":""}
             if "unk" in parsed_dict[lemma]["meanings"]:
                 del parsed_dict[lemma]["meanings"]["unk"] # if we find a PoS we delete the "unk" one
         return pos
@@ -289,13 +289,11 @@ def glossa_check(line, lemma, pos):
 
 def get_examples(line, lemma, pos):
     """Extracts and parses usage examples from the glossa"""
-    cleaned_line = string_cleaner(line, lemma)
+    cleaned_line = string_cleaner(line, lemma) # capire come inserire gli esempi
     if cleaned_line == "":
         return
-    if parsed_dict[lemma]["meanings"][pos]["examples"] == "":
-        parsed_dict[lemma]["meanings"][pos]["examples"] += cleaned_line
-    else:
-        parsed_dict[lemma]["meanings"][pos]["examples"] += "\n"+cleaned_line
+    
+    parsed_dict[lemma]["meanings"][pos]["glossa"] += f"[EXAMPLE: {cleaned_line}]"
 
 
 def main(xml_dump_path):
@@ -327,7 +325,7 @@ def main(xml_dump_path):
 
                     try:
                         lines = glossa.splitlines()
-                        for i in range(len(lines)):
+                        for i in range(len(lines)): # iterating one line at a time (this modus operandi is due to the non closing nature of the wiktionary tamplate. Also, glosses are not introduced by templates)
                             line = lines[i]
 
                             if line == "":
@@ -449,7 +447,7 @@ def main(xml_dump_path):
                                 if line[-1] == ":": # it introduces a list (usually...)
                                     elenco_flag = True
                                 try:
-                                    if line[1] in ["*", ":"] and not elenco_flag: # examples
+                                    if line[1] in ["*", ":", "#"] and not elenco_flag: # examples
                                         get_examples(line, lemma, current_pos)
                                         continue
                                 except IndexError:
@@ -471,12 +469,11 @@ if __name__ == "__main__":
     lang_dict = {k:v for k, v in zip(df["Language Code"], df["Language Name (Italian)"])}
 
     # use the following dictionary as a PoS converter. The following key value pairs handles some tag errors made by users 
-    pos_converter_dict = {"suffissoide": "suff",
+    pos_converter_dict = {
                           "voce verb": "verb",
                           "verbm form": "verb form",
                           "adj": "agg",
-                          "adj form": "agg form",
-                          "prefissoide": "pref"}
+                          "adj form": "agg form"}
     
     ambito_dict = {"{{Est}}": "(per estensione)",
                     "{{Lett}}": "(letteralmente)",
