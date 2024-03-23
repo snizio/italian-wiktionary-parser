@@ -11,7 +11,7 @@ Each lemma is structured in a dictionary with two keys: "meta" and "meanings":
 - "meanings":
   - Each meaning is disambiguated by the Part of Speech (PoS) as reported by Wiktionary. So for each PoS we have:
     - "morpho": the morphological information (if available, usually never available for verbs).
-    - "glossa": each definition is separated by a "\n". Tags entries, like i.e. {{Term|Astrologia|it}}, are kept (like this ##Astrologia##) since they add an interesting categorization. Usage examples are added in the form: [EXAMPLE: ...]
+    - "glossa": each definition is separated by a "\n". Tags entries, like i.e. {{Term|Astrologia|it}}, are kept (like this ##Astrologia##) since they add an interesting categorization. Usage examples are added in the form: [ESEMPIO: ...]
 
 For example, the word "passo" will be structured as follows:
 
@@ -34,11 +34,11 @@ For example, the word "passo" will be structured as follows:
    '(nel ciclismo) ##sport## ** andatura'],
   'ant': ['fresco']},
  'meanings': {'agg_0': {'morpho': 'm sing',
-   'glossa': "##obsoleto se non al femminile singolare## che è appassito, che ha perso tutta l'acqua precedentemente contenuta, detto generalmente di frutti[EXAMPLE: uva passa]"},
+   'glossa': "##obsoleto se non al femminile singolare## che è appassito, che ha perso tutta l'acqua precedentemente contenuta, detto generalmente di frutti[ESEMPIO: uva passa]"},
   'sost_1': {'morpho': 'm sing',
-   'glossa': "##fisica## movimento dei piedi o di altri oggetti semoventi in avanti oppure all' indietro[EXAMPLE: fece un passo verso di lei][EXAMPLE: dalla paura fece un passo indietro]\n##meccanica## ##tecnologia## ##ingegneria## distanza costante tra due punti successivi[EXAMPLE: il passo della filettatura è la distanza tra i profili]\n##geografia## il punto di passaggio tra due valli di un percorso stradale[EXAMPLE: passo dello Stelvio]"},
+   'glossa': "##fisica## movimento dei piedi o di altri oggetti semoventi in avanti oppure all' indietro[ESEMPIO: fece un passo verso di lei][ESEMPIO: dalla paura fece un passo indietro]\n##meccanica## ##tecnologia## ##ingegneria## distanza costante tra due punti successivi[ESEMPIO: il passo della filettatura è la distanza tra i profili]\n##geografia## il punto di passaggio tra due valli di un percorso stradale[ESEMPIO: passo dello Stelvio]"},
   'verb form_2': {'morpho': '',
-   'glossa': "prima persona singolare dell'indicativo predente di passare[EXAMPLE: tra un'ora passo da te]"}}}
+   'glossa': "prima persona singolare dell'indicativo predente di passare[ESEMPIO: tra un'ora passo da te]"}}}
 
 ```
 

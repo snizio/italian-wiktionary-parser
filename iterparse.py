@@ -293,7 +293,7 @@ def get_examples(line, lemma, pos):
     if cleaned_line == "":
         return
     
-    parsed_dict[lemma]["meanings"][pos]["glossa"] += f"[EXAMPLE: {cleaned_line}]"
+    parsed_dict[lemma]["meanings"][pos]["glossa"] += f"[ESEMPIO: {cleaned_line}]"
 
 
 def main(xml_dump_path):
