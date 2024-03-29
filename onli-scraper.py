@@ -72,6 +72,10 @@ for letter in tqdm(letters, desc=f"Letter", leave=False): # for each letter
                     # glossa
                     glossa = lemma_soup.find_all("p")[1].text
 
+                    # if the PoS is an acronym
+                    if glossa.strip().startswith("Acronimo"):
+                        lemma_pos = "acron"
+
                     # examples
                     target_p = lemma_soup.find('p', text=glossa)
                     target_ul = target_p.find_next_sibling('ul')
