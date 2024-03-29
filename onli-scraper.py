@@ -63,10 +63,16 @@ for letter in tqdm(letters, desc=f"Letter", leave=False): # for each letter
                     lemma_url = "https://www.iliesi.cnr.it/ONLI/" + a["href"]
                     lemma_response = requests.get(lemma_url)
                     lemma_soup = BeautifulSoup(lemma_response.text, "html.parser")
+
+                    # PoS
                     lemma_pos_text = lemma_soup.find_all("div", {"class": "boxentry"})[0].text.strip().split("\r")[0].split(lemma)[-1]
                     posses = [abbreviazioni_pos[pos] for pos in abbreviazioni_pos if pos in lemma_pos_text.split(" ")]
                     lemma_pos = handle_pos(posses)
+
+                    # glossa
                     glossa = lemma_soup.find_all("p")[1].text
+
+                    # examples
                     target_p = lemma_soup.find('p', text=glossa)
                     target_ul = target_p.find_next_sibling('ul')
                     li_elements = target_ul.find_all('li')
@@ -74,13 +80,33 @@ for letter in tqdm(letters, desc=f"Letter", leave=False): # for each letter
                     for li in li_elements:
                         li_text = li.text
                         examples.append(li_text)
-                    final_dict[lemma] = (lemma_pos, glossa.strip(), examples) # save the data in the dictionary
+
+                    # etymology
+                    etymology = ""
+                    start_element = lemma_soup.find('b', class_='diamondb')
+                    etymology += start_element.text
+
+                    for sibling in start_element.next_siblings:
+                        if sibling.name == 'br':
+                            break
+                        etymology += sibling.text
+
+                    new_start_element = lemma_soup.find('b', class_='diamondv')
+                    etymology += ", " + new_start_element.text
+
+                    for sibling in new_start_element.next_siblings:
+                        if sibling.name == 'br':
+                            break
+                        etymology += sibling.text
+
+                    final_dict[lemma] = (lemma_pos, glossa.strip(), etymology, examples) # save the data in the dictionary
                     time.sleep(0.1) # to avoid being blocked
 
 lemmas = list(final_dict.keys())
 lemmas_pos = [final_dict[lemma][0] for lemma in lemmas]
 lemmas_glossa = [final_dict[lemma][1] for lemma in lemmas]
-lemmas_examples = [" ** ".join(final_dict[lemma][2]) for lemma in lemmas]
-df = pd.DataFrame({"lemma": lemmas, "pos": lemmas_pos, "glossa": lemmas_glossa, "examples": lemmas_examples}) # create a DataFrame
+lemmas_etymology = [final_dict[lemma][2] for lemma in lemmas]
+lemmas_examples = [" ** ".join(final_dict[lemma][3]) for lemma in lemmas]
+df = pd.DataFrame({"lemma": lemmas, "pos": lemmas_pos, "glossa": lemmas_glossa, "examples": lemmas_examples, "etymology": lemmas_etymology}) # create a DataFrame
 
 df.to_csv("ONLI-NEO.csv", index=False) # save the DataFrame as a CSV file

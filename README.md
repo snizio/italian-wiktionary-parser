@@ -57,7 +57,7 @@ To decompress and save the compressed dictionary into .json file run the followi
 python decompress_and_save.py compressed_dictionary json_out_path
 ```
 
-The repository also contains a script (onli-scraper.py) for parsing the ONLI database of Italian neologisms. The ONLI-NEO.csv files already contains all the scraped data consisting of 2986 lexical entries annotated with PoS (translated to the Wikizionario style), glosses and usage examples (if there are more examples they are separated by " ** ").
+The repository also contains a script (onli-scraper.py) for parsing the ONLI database of Italian neologisms. The ONLI-NEO.csv files already contains all the scraped data consisting of 2986 lexical entries annotated with PoS (translated to the Wikizionario style), glosses, etymology and usage examples (if there are more examples they are separated by " ** ").
 
 The repository also contains vdb_lemmas.txt wich is a list of around 7k most frequent and foundamental lemmas in the italian lexicon extracted from the "Nuovo vocabolario di base della lingua italiana", De Mauro (1). This resource was extracted in order to assess the Wikizionario coverage of the VdB lemmas, wich is, as august 2023, of 97.67%.
 
