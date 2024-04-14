@@ -277,12 +277,12 @@ def get_sin_ant(line, lemma, sin_ant):
         return
     parsed_dict[lemma]["meta"][sin_ant].append(cleaned_line)
     
-def glossa_check(line, lemma, pos):
+def glossa_check(line, lemma, pos, elenco_flag):
     """Extracts and parses the glossa"""
     cleaned_line = string_cleaner(line, lemma)
     if cleaned_line == "":
         return
-    if parsed_dict[lemma]["meanings"][pos]["glossa"] == "":
+    if parsed_dict[lemma]["meanings"][pos]["glossa"] == "" or elenco_flag == True:
         parsed_dict[lemma]["meanings"][pos]["glossa"] += cleaned_line
     else:
         parsed_dict[lemma]["meanings"][pos]["glossa"] += "\n"+cleaned_line
@@ -452,7 +452,7 @@ def main(xml_dump_path):
                                         continue
                                 except IndexError:
                                     continue # if line[1:] is empty
-                                glossa_check(line, lemma, current_pos)
+                                glossa_check(line, lemma, current_pos, elenco_flag)
                             else:
                                 elenco_flag = False
                                                 
