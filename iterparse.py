@@ -287,9 +287,18 @@ def glossa_check(line, lemma, pos, elenco_flag):
     else:
         parsed_dict[lemma]["meanings"][pos]["glossa"] += "\n"+cleaned_line
 
+def example_check(line):
+    """Checks if the line is in italic and therefore an example"""
+    match = re.search(example_pattern, line)
+    if match != None:
+        return True
+    else:
+        return False
+
 def get_examples(line, lemma, pos):
     """Extracts and parses usage examples from the glossa"""
-    cleaned_line = string_cleaner(line, lemma) # capire come inserire gli esempi
+    example = re.search(example_pattern, line).group(1)
+    cleaned_line = string_cleaner(example, lemma)
     if cleaned_line == "":
         return
     
@@ -441,20 +450,26 @@ def main(xml_dump_path):
                                 elenco_flag = False
                                 continue
 
-                            if line[0] == "#": # glossa
+                            if line[0] == "#": # it introduces glosses or examples (usually...)
                                 if nodef_check(line):
                                     continue
                                 if line[-1] == ":": # it introduces a list (usually...)
                                     elenco_flag = True
-                                try:
-                                    if line[1] in ["*", ":", "#"] and not elenco_flag: # examples
-                                        get_examples(line, lemma, current_pos)
-                                        continue
-                                except IndexError:
-                                    continue # if line[1:] is empty
-                                glossa_check(line, lemma, current_pos, elenco_flag)
-                            else:
-                                elenco_flag = False
+                                if example_check(line): # with this we assume that examples are always in italic
+                                    get_examples(line, lemma, current_pos)
+                                    elenco_flag = False
+                                else: # and glossa are not in italic
+                                    glossa_check(line, lemma, current_pos, elenco_flag)
+                            #     try:
+                            #         if line[1] in ["*", ":", "#"] and not elenco_flag: # from the guidelines one indentation indicates usage examples, although this is not always the case
+                            #             if example_check(line):
+                            #                 get_examples(line, lemma, current_pos)
+                            #             continue
+                            #     except IndexError:
+                            #         continue # if line[1:] is empty
+                            #     glossa_check(line, lemma, current_pos, elenco_flag)
+                            # else:
+                            #     elenco_flag = False
                                                 
                     except Exception as e:
                         print("ERROR at lemma", lemma)
@@ -520,6 +535,7 @@ if __name__ == "__main__":
     sin_ant_pattern = re.compile("{{-(sin)-}}|{{-(ant)-}}")
     parenthesis_pattern = re.compile("\(.*?\)")
     hash_pattern = re.compile("(##.*?##)")
+    example_pattern = re.compile("''(.*?)''$")
 
     main(sys.argv[1])
 
