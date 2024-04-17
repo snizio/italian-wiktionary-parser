@@ -304,6 +304,13 @@ def get_examples(line, lemma, pos):
     
     parsed_dict[lemma]["meanings"][pos]["glossa"] += f"[ESEMPIO: {cleaned_line}]"
 
+def clean_indent_and_spaces(line):
+    """Removes the first character if it is a special character (*, #, :) or a space and recursively calls itself"""
+    if len(line) > 0 and line[0] in ["*", "#", ":", " "]:
+        return clean_indent_and_spaces(line[1:])
+    else:
+        return line
+
 
 def main(xml_dump_path):
     """main function"""
@@ -453,6 +460,9 @@ def main(xml_dump_path):
                             if line[0] == "#": # it introduces glosses or examples (usually...)
                                 if nodef_check(line):
                                     continue
+                                line = clean_indent_and_spaces(line)
+                                if line == "":
+                                    continue
                                 if line[-1] == ":": # it introduces a list (usually...)
                                     elenco_flag = True
                                 if example_check(line): # with this we assume that examples are always in italic
@@ -535,7 +545,7 @@ if __name__ == "__main__":
     sin_ant_pattern = re.compile("{{-(sin)-}}|{{-(ant)-}}")
     parenthesis_pattern = re.compile("\(.*?\)")
     hash_pattern = re.compile("(##.*?##)")
-    example_pattern = re.compile("''(.*?)''$")
+    example_pattern = re.compile("^''(.*?)''$") # extracts examples that, per guidelines, are always in italic (obv this is not always the case)
 
     main(sys.argv[1])
 
