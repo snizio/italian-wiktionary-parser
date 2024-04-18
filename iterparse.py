@@ -309,7 +309,7 @@ def clean_indent_and_spaces(line):
     if len(line) > 0 and line[0] in ["*", "#", ":", " "]:
         return clean_indent_and_spaces(line[1:])
     else:
-        return line
+        return line.strip()
 
 
 def main(xml_dump_path):
@@ -545,7 +545,7 @@ if __name__ == "__main__":
     sin_ant_pattern = re.compile("{{-(sin)-}}|{{-(ant)-}}")
     parenthesis_pattern = re.compile("\(.*?\)")
     hash_pattern = re.compile("(##.*?##)")
-    example_pattern = re.compile("^''(.*?)''$") # extracts examples that, per guidelines, are always in italic (obv this is not always the case)
+    example_pattern = re.compile("^''(.*?)''\s*(?:\(.*?\))?\.?$") # extracts examples that, per guidelines, are always in italic (obv this is not always the case)
 
     main(sys.argv[1])
 
