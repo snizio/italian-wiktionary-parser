@@ -1,5 +1,5 @@
 # italian-wiktionary-parser
-This repository contains a python script for parsing the xml dump of the Italian Wiktionary (Wikizionario). It also contains the parsed dictionary (august 2023) in a compressed json file (it-dictionary.gz) with 370k lemmas circa. As far as I'm concerned, this is the first repo ever offering an italian dictionary as a free resource. This was made available to enhance NLP tasks that needs similar type of corpora. Since the Wiktionary is inherently multilingual, here I kept only words that has an Italian tag definition =={{-it-}}== (that is, Italian words and frequently used non-Italian words in the Italian lexicon). 
+This repository contains a python script for parsing the xml dump of the Italian Wiktionary (Wikizionario). It also contains the parsed dictionary (UPDATE: april 2024) in a compressed json file (it-dictionary.gz) with 370k lemmas circa. As far as I'm concerned, this is the first repo ever offering an italian dictionary as a free resource. This was made available to enhance NLP tasks that needs similar type of corpora. Since the Wiktionary is inherently multilingual, here I kept only words that has an Italian tag definition =={{-it-}}== (that is, Italian words and frequently used non-Italian words in the Italian lexicon). 
 
 Each lemma is structured in a dictionary with two keys: "meta" and "meanings":
 
@@ -42,8 +42,8 @@ For example, the word "passo" will be structured as follows:
 
 ```
 
-There are inconsistencies due to shallow tagging by the wiktionary users and the weird complexity of the tag system. Right now, of the 370k lemmas, 4k have no glossa and 14k no etymology (mostly because absent from the Wiktionary, rarely due to parsing errors). The logic behind the parser is, therefore, tricky and not easy to understand. Also, changes in the dictionary tag schema can break the parser.
-The dump is taken from https://dumps.wikimedia.org/itwiktionary/20230701/.
+There are inconsistencies due to shallow tagging by the wiktionary users and the weird complexity of the tag system. Right now, of the 370k lemmas, 4k have no glossa and 14k no etymology (mostly because absent from the Wiktionary, rarely due to parsing errors). The logic behind the parser is, therefore, unnecessary tricky and not easy to understand. Also, changes in the dictionary tag schema can break the parser.
+The dump is taken from https://dumps.wikimedia.org/itwiktionary/.
 
 If you want to run the parser on your xml dump, run it from command line with the following statement: 
 
@@ -57,7 +57,7 @@ To decompress and save the compressed dictionary into .json file run the followi
 python decompress_and_save.py compressed_dictionary json_out_path
 ```
 
-The repository also contains a script (onli-scraper.py) for parsing the ONLI database of Italian neologisms. The ONLI-NEO.csv files already contains all the scraped data consisting of 2986 lexical entries annotated with PoS (translated to the Wikizionario style), glosses, etymology and usage examples (if there are more examples they are separated by " ** ").
+The repository also contains a script (onli-scraper.py) for parsing the ONLI database of Italian neologisms. The ONLI-NEO.csv files already contains all the scraped data consisting of 2986 lexical entries annotated with PoS (translated to the Wikizionario style), glosses, etymology and usage examples (if there are more examples for a single lemma they are separated by " ** ").
 
 The repository also contains vdb_lemmas.txt wich is a list of around 7k most frequent and foundamental lemmas in the italian lexicon extracted from the "Nuovo vocabolario di base della lingua italiana", De Mauro (1). This resource was extracted in order to assess the Wikizionario coverage of the VdB lemmas, wich is, as august 2023, of 97.67%.
 
