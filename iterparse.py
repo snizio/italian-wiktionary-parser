@@ -289,15 +289,18 @@ def glossa_check(line, lemma, pos, elenco_flag):
 
 def example_check(line):
     """Checks if the line is in italic and therefore an example"""
-    match = re.search(example_pattern, line)
-    if match != None:
-        return True
-    else:
-        return False
+    # match = re.search(example_pattern, line)
+    match = "''" in line
+    # if match != None:
+    #     return True
+    # else:
+    #     return False
+    return match
 
 def get_examples(line, lemma, pos):
     """Extracts and parses usage examples from the glossa"""
-    example = re.search(example_pattern, line).group(1)
+    # example = re.search(example_pattern, line).group(1)
+    example = line
     cleaned_line = string_cleaner(example, lemma)
     if cleaned_line == "":
         return
@@ -381,7 +384,7 @@ def main(xml_dump_path):
                                     continue 
                             
                             if sin_ant_flag != False:
-                                if line[0] == "*":
+                                if line[0] in ["*", "#"]:
                                     get_sin_ant(line, lemma, sin_ant_flag)
                                     continue
                                 else:
@@ -460,12 +463,13 @@ def main(xml_dump_path):
                             if line[0] == "#": # it introduces glosses or examples (usually...)
                                 if nodef_check(line):
                                     continue
-                                line = clean_indent_and_spaces(line)
                                 if line == "":
                                     continue
                                 if line[-1] == ":": # it introduces a list (usually...)
                                     elenco_flag = True
-                                if example_check(line): # with this we assume that examples are always in italic
+                                n_indent = sum(1 for c in line[:4] if c in ["#", "*", ":"])
+                                line = clean_indent_and_spaces(line)
+                                if example_check(line) and n_indent > 1: # with this we assume that examples are always in italic
                                     get_examples(line, lemma, current_pos)
                                     elenco_flag = False
                                 else: # and glossa are not in italic
@@ -545,7 +549,7 @@ if __name__ == "__main__":
     sin_ant_pattern = re.compile("{{-(sin)-}}|{{-(ant)-}}")
     parenthesis_pattern = re.compile("\(.*?\)")
     hash_pattern = re.compile("(##.*?##)")
-    example_pattern = re.compile("^''(.*?)''\s*(?:\(.*?\))?\.?$") # extracts examples that, per guidelines, are always in italic (obv this is not always the case)
+    example_pattern = re.compile("^''(.*?)(?:'')?\s*(?:\(.*?\))?\.?$") # extracts examples that, per guidelines, are always in italic (obv this is not always the case)
 
     main(sys.argv[1])
 
