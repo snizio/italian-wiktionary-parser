@@ -277,12 +277,12 @@ def get_sin_ant(line, lemma, sin_ant):
         return
     parsed_dict[lemma]["meta"][sin_ant].append(cleaned_line)
     
-def glossa_check(line, lemma, pos, elenco_flag):
+def glossa_check(line, lemma, pos):
     """Extracts and parses the glossa"""
     cleaned_line = string_cleaner(line, lemma)
     if cleaned_line == "":
         return
-    if parsed_dict[lemma]["meanings"][pos]["glossa"] == "" or elenco_flag == True:
+    if parsed_dict[lemma]["meanings"][pos]["glossa"] == "":
         parsed_dict[lemma]["meanings"][pos]["glossa"] += cleaned_line
     else:
         parsed_dict[lemma]["meanings"][pos]["glossa"] += "\n"+cleaned_line
@@ -465,15 +465,12 @@ def main(xml_dump_path):
                                     continue
                                 if line == "":
                                     continue
-                                if line[-1] == ":": # it introduces a list (usually...)
-                                    elenco_flag = True
                                 n_indent = sum(1 for c in line[:4] if c in ["#", "*", ":"])
                                 line = clean_indent_and_spaces(line)
                                 if example_check(line) and n_indent > 1: # with this we assume that examples are always in italic
                                     get_examples(line, lemma, current_pos)
-                                    elenco_flag = False
                                 else: # and glossa are not in italic
-                                    glossa_check(line, lemma, current_pos, elenco_flag)
+                                    glossa_check(line, lemma, current_pos)
                             #     try:
                             #         if line[1] in ["*", ":", "#"] and not elenco_flag: # from the guidelines one indentation indicates usage examples, although this is not always the case
                             #             if example_check(line):
