@@ -29,6 +29,8 @@ understanding and offers an insight, through
 the assessment of their linguistic creativity, on
 the lexical generalization abilities of LMs.
 
+(Old description)
+
 This repository contains a python script for parsing the xml dump of the Italian Wiktionary (Wikizionario). It also contains the parsed dictionary (UPDATE: april 2024) in a compressed json file (it-dictionary.gz) with 370k lexcial entries circa. As far as I'm concerned, this is the first repo ever offering an italian dictionary as a free resource. This was made available to enhance NLP tasks that needs similar type of corpora. Since the Wiktionary is inherently multilingual, here I kept only words that has an Italian tag definition =={{-it-}}== (that is, Italian words and frequently used non-Italian words in the Italian lexicon). 
 
 Each lemma is structured in a dictionary with two keys: "meta" and "meanings":
