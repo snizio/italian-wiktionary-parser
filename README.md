@@ -1,4 +1,34 @@
 # italian-wiktionary-parser
+
+The repository contains specifc code and data related to our paper: **Evaluating Lexical Proficiency in Neural Language Models**, C. Ciaccio, A. Miaschi, F. Dell'Orletta (ACL 2025). Please visit the **[main repository](https://github.com/snizio/Lexical-Proficiency/tree/main)** for more information. 
+
+If you use any of the following contents for your work, we kindly ask you to cite our paper:
+
+```bibtex
+@inproceedings{
+}
+```
+
+> **Abstract:** We present a novel evaluation framework de-
+signed to assess the lexical proficiency and
+linguistic creativity of Transformer-based Lan-
+guage Models (LMs). We validate the frame-
+work by analyzing the performance of a set of
+LMs of different sizes, in both mono- and mul-
+tilingual configuration, across tasks involving
+the generation, definition, and contextual usage
+of lexicalized words, neologisms, and nonce
+words. To support these evaluations, we devel-
+oped a novel dataset of lexical entries for the
+Italian language, including curated definitions
+and usage examples sourced from various on-
+line platforms. The results highlight the robust-
+ness and effectiveness of our framework in eval-
+uating multiple dimensions of LMs’ linguistic
+understanding and offers an insight, through
+the assessment of their linguistic creativity, on
+the lexical generalization abilities of LMs.
+
 This repository contains a python script for parsing the xml dump of the Italian Wiktionary (Wikizionario). It also contains the parsed dictionary (UPDATE: april 2024) in a compressed json file (it-dictionary.gz) with 370k lemmas circa. As far as I'm concerned, this is the first repo ever offering an italian dictionary as a free resource. This was made available to enhance NLP tasks that needs similar type of corpora. Since the Wiktionary is inherently multilingual, here I kept only words that has an Italian tag definition =={{-it-}}== (that is, Italian words and frequently used non-Italian words in the Italian lexicon). 
 
 Each lemma is structured in a dictionary with two keys: "meta" and "meanings":
